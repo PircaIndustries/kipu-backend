@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kipu.API", "Kipu.API\Kipu.API.csproj", "{8E3D837F-2597-4639-802F-6D1AFF361E3C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E3D837F-2597-4639-802F-6D1AFF361E3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E3D837F-2597-4639-802F-6D1AFF361E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E3D837F-2597-4639-802F-6D1AFF361E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E3D837F-2597-4639-802F-6D1AFF361E3C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
