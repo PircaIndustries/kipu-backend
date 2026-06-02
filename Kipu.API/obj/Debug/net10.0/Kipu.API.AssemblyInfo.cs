@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Kipu.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+094dc93298f7a410bf913c96f4300f2536345241")]
 [assembly: System.Reflection.AssemblyProductAttribute("Kipu.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Kipu.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
