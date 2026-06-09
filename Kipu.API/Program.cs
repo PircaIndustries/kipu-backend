@@ -4,6 +4,11 @@ using Kipu.API.IAM.Application.Services;
 using Kipu.API.IAM.Domain.Repositories;
 using Kipu.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 using Kipu.API.IAM.Infrastructure.Services;
+using Kipu.API.Projects.Application.Internal.CommandServices;
+using Kipu.API.Projects.Application.Internal.QueryServices;
+using Kipu.API.Projects.Application.Services;
+using Kipu.API.Projects.Domain.Repositories;
+using Kipu.API.Projects.Infrastructure.Persistence.EFC.Repositories;
 using Kipu.API.Shared.Domain.Repositories;
 using Kipu.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -79,6 +84,12 @@ builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
 builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+
+// Projects Bounded Context Dependency Injections
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectItemRepository, ProjectItemRepository>();
+builder.Services.AddScoped<IProjectCommandService, ProjectCommandService>();
+builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
 
 var app = builder.Build();
 
