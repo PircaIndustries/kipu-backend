@@ -4,14 +4,24 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Humanizer" Version="3.0.10" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.4"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.9">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.7" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.2.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="10.2.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.2.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.1" />
@@ -21,7 +31,19 @@
       <Folder Include="IAM\Application\" />
       <Folder Include="IAM\Infrastructure\" />
       <Folder Include="IAM\Interfaces\" />
-      <Folder Include="Shared\Infrastructure\Persistence\EFC\Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\SharedResource.es.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>SharedResource.es.Designer.cs</LastGenOutput>
+        <DependentUpon>SharedResource.cs</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\SharedResource.en.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>SharedResource.en.Designer.cs</LastGenOutput>
+        <DependentUpon>SharedResource.cs</DependentUpon>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

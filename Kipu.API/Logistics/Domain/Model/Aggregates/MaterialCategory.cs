@@ -8,13 +8,14 @@ public partial class MaterialCategory
     protected MaterialCategory()
     {
         Name = null!;
+        Description = string.Empty;
     }
 
     public MaterialCategory(CreateMaterialCategoryCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         Name = command.Name;
-        Description = command.Description;
+        Description = command.Description ?? string.Empty;
         IsActive = command.IsActive;
     }
     public int Id { get; private set; }

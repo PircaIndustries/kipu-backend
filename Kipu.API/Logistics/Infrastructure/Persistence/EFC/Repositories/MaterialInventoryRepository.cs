@@ -14,7 +14,7 @@ public class MaterialInventoryRepository(AppDbContext context)
     {
         var query = from inventory in Context.Set<MaterialInventory>()
             join catalog in Context.Set<MaterialCatalog>()
-                on inventory.MaterialId.Value equals catalog.Id 
+                on inventory.MaterialCatalogId.Value equals catalog.Id 
             where catalog.CategoryId.Value == categoryId.Value
             select inventory;
                     

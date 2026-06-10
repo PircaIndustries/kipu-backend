@@ -11,6 +11,7 @@ namespace Kipu.API.Logistics.Application.Internal.CommandServices;
 
 public class MaterialInventoryCommandService(
     IMaterialInventoryRepository materialInventoryRepository,
+    IMaterialCatalogRepository materialCatalogRepository,
     IUnitOfWork unitOfWork,
     ILogger<MaterialInventoryCommandService> logger)
 : IMaterialInventoryCommandService
@@ -18,12 +19,13 @@ public class MaterialInventoryCommandService(
     public async Task<Result<MaterialInventory, CreateMaterialInventoryError>> Handle(
         CreateMaterialInventoryCommand command, CancellationToken cancellationToken = default)
     {
+        
         var catalogItem =
-            await materialInventoryRepository.FindByIdAsync(command.MaterialId.Value, cancellationToken);
+            await materialCatalogRepository.FindByIdAsync(command.MaterialCatalogId.Value, cancellationToken);
         if (catalogItem == null)
         {
             logger.LogWarning("The inventory cannot be created. The material {MaterialId} does not exist in the catalog.", 
-                command.MaterialId.Value);
+                command.MaterialCatalogId.Value);
             return new Result<MaterialInventory, CreateMaterialInventoryError>.Failure(
                 CreateMaterialInventoryError.DuplicatedMaterialInventory);
         }
@@ -37,7 +39,7 @@ public class MaterialInventoryCommandService(
         catch (ArgumentException ex)
         {
             logger.LogWarning(ex, "Invalid arguments when creating inventory for the Material {MaterialId}, ProjectId {ProjectId}, CurrentStock {CurrentStock} and MinimumStock {MinimumStock}", 
-                command.MaterialId.Value,  command.ProjectId, command.CurrentStock, command.MinimumStock);
+                command.MaterialCatalogId.Value,  command.ProjectId, command.CurrentStock, command.MinimumStock);
             return new Result<MaterialInventory, CreateMaterialInventoryError>.Failure(
                 CreateMaterialInventoryError.UnexpectedError);
         }
@@ -45,7 +47,7 @@ public class MaterialInventoryCommandService(
         {
             logger.LogWarning(ex,
                 "Duplicate key violation creating inventory for the Material {MaterialId}, ProjectId {ProjectId}, CurrentStock {CurrentStock} and MinimumStock {MinimumStock}",
-                command.MaterialId.Value,  command.ProjectId, command.CurrentStock, command.MinimumStock);
+                command.MaterialCatalogId.Value,  command.ProjectId, command.CurrentStock, command.MinimumStock);
             return new Result<MaterialInventory, CreateMaterialInventoryError>.Failure(
                 CreateMaterialInventoryError.DuplicatedMaterialInventory);
         }
@@ -53,7 +55,7 @@ public class MaterialInventoryCommandService(
         {
             logger.LogError(ex,
                 "Database update failed creating inventory for the Material {MaterialId}, ProjectId {ProjectId}, CurrentStock {CurrentStock} and MinimumStock {MinimumStock}",
-                command.MaterialId.Value,  command.ProjectId, command.CurrentStock, command.MinimumStock);
+                command.MaterialCatalogId.Value,  command.ProjectId, command.CurrentStock, command.MinimumStock);
             return new Result<MaterialInventory, CreateMaterialInventoryError>.Failure(
                 CreateMaterialInventoryError.UnexpectedError);
         }
@@ -61,7 +63,7 @@ public class MaterialInventoryCommandService(
         {
             logger.LogError(ex,
                 "Unexpected error creating inventory for the Material {MaterialId}, ProjectId {ProjectId}, CurrentStock {CurrentStock} and MinimumStock {MinimumStock}",
-                command.MaterialId.Value,  command.ProjectId, command.CurrentStock, command.MinimumStock);
+                command.MaterialCatalogId.Value,  command.ProjectId, command.CurrentStock, command.MinimumStock);
             return new Result<MaterialInventory, CreateMaterialInventoryError>.Failure(
                 CreateMaterialInventoryError.UnexpectedError);
         }

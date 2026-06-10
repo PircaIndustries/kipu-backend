@@ -9,24 +9,25 @@ public partial class MaterialInventory
     protected MaterialInventory()
     {
         ProjectId = null!;
-        MaterialId = null!;
+        MaterialCatalogId = null!;
         CurrentStock = null!;
         MinimumStock = null!;
+        Location = null!;
     }
 
     public MaterialInventory(CreateMaterialInventoryCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
         ProjectId = command.ProjectId;
-        MaterialId = command.MaterialId;
+        MaterialCatalogId = command.MaterialCatalogId;
         CurrentStock = command.CurrentStock;
         MinimumStock = command.MinimumStock ?? new Quantity(0);
         Location = command.Location;
     }
     public int Id { get; private set; }
     public ProjectId ProjectId { get; private set; }
-    public MaterialId MaterialId { get; private set; }
+    public MaterialCatalogId MaterialCatalogId { get; private set; }
     public Quantity CurrentStock { get; private set; }
     public Quantity MinimumStock { get; private set; }
-    public String Location { get; private set; }
+    public WarehouseLocation Location { get; private set; }
 }

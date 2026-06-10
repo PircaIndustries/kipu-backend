@@ -4,11 +4,10 @@ using Kipu.API.Logistics.Domain.Model.Queries;
 using Kipu.API.Logistics.Domain.Model.ValueObjects;
 using Kipu.API.Logistics.Interfaces.REST.Resources;
 using Kipu.API.Logistics.Interfaces.REST.Transform;
-using Microsoft.AspNetCore.Http.HttpResults;
-
 namespace Kipu.API.Logistics.Interfaces.REST;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Kipu.API.Resources;
 using Swashbuckle.AspNetCore.Annotations;
 
 [ApiController]
@@ -63,8 +62,13 @@ public class MaterialInventoryController(
                 statusCode: 500);
         }
     }
-    
-    private async Task<ActionResult> GetAllMaterialInventoryByCategoryId(CategoryId categoryId,
+    [HttpGet("category/{categoryId}")]
+    [SwaggerOperation(
+        Summary = "Gets all Material Inventories by Category Id",
+        Description = "Retrieves all material inventories associated with a specific category identifier.",
+        OperationId = "GetAllMaterialInventoryByCategoryId")]
+    [SwaggerResponse(200, "The material inventories were found", typeof(IEnumerable<MaterialInventoryResource>))]
+    public async Task<ActionResult> GetAllMaterialInventoryByCategoryId(CategoryId categoryId,
         CancellationToken cancellationToken)
     {
         var getAllMaterialInventoryByCategoryIdQuery = new GetAllMaterialInventoryByCategoryIdQuery(categoryId);
