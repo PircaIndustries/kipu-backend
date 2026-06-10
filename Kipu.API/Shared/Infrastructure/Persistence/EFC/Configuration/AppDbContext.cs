@@ -1,5 +1,8 @@
 using Kipu.API.IAM.Domain.Model.Aggregates;
 using Kipu.API.Projects.Domain.Model.Aggregates;
+using Kipu.API.Logistics.Domain.Model.Aggregates;
+using Kipu.API.Logistics.Domain.Model.ValueObjects;
+using Kipu.API.Logistics.Domain.Model.ValueObjects.External;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Interceptors;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +14,9 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 /// </summary>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
+    public DbSet<MaterialInventory> MaterialInventories { get; set; }
+    public DbSet<MaterialCatalog> MaterialCatalogs { get; set; }
+    public DbSet<MaterialCategory> MaterialCategories { get; set; }
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -52,7 +58,79 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .WithMany(p => p.Items)
             .HasForeignKey(pi => pi.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        // MaterialInventory mapping
+        builder.Entity<MaterialInventory>(entity =>
+        {
+            entity.HasKey(mi => mi.Id);
+            entity.Property(mi => mi.Id).IsRequired().ValueGeneratedOnAdd();
+            
+            entity.Property(mi => mi.ProjectId)
+                .HasConversion(p => p.Value, v => new ProjectId(v))
+                .IsRequired();
 
+            entity.Property(mi => mi.MaterialCatalogId)
+                .HasConversion(m => m.Value, v => new MaterialCatalogId(v))
+                .IsRequired();
+
+            entity.Property(mi => mi.CurrentStock)
+                .HasConversion(q => q.Value, v => new Quantity(v))
+                .IsRequired();
+
+            entity.Property(mi => mi.MinimumStock)
+                .HasConversion(q => q.Value, v => new Quantity(v))
+                .IsRequired();
+
+            entity.Property(mi => mi.Location)
+                .HasConversion(l => l.Value, v => new WarehouseLocation(v))
+                .IsRequired();
+        });
+        
+        // MaterialCatalog mapping
+        builder.Entity<MaterialCatalog>(entity =>
+        {
+            entity.HasKey(mc => mc.Id);
+            entity.Property(mc => mc.Id).IsRequired().ValueGeneratedOnAdd();
+            
+            entity.Property(mc => mc.Name)
+                .HasConversion(n => n.Value, v => new Name(v))
+                .IsRequired()
+                .HasMaxLength(255);
+
+            entity.Property(mc => mc.CategoryId)
+                .HasConversion(c => c.Value, v => new CategoryId(v))
+                .IsRequired();
+
+            entity.Property(mc => mc.MeasureUnit)
+                .HasConversion<int>()
+                .IsRequired();
+            
+            entity.HasIndex(mc => mc.Name).IsUnique();
+        });
+        // MaterialCategory mapping
+        
+        builder.Entity<MaterialCategory>(entity =>
+        {
+            entity.HasKey(mc => mc.Id);
+            entity.Property(mc => mc.Id).IsRequired().ValueGeneratedOnAdd();
+            
+            entity.Property(mc => mc.Name)
+                .HasConversion(n => n.Value, v => new Name(v))
+                .IsRequired()
+                .HasMaxLength(255);
+
+            entity.Property(mc => mc.Description)
+                .HasMaxLength(500);
+
+            entity.Property(mc => mc.IsActive)
+                .IsRequired()
+                .HasDefaultValue(true);
+            
+            entity.HasIndex(mc => mc.Name).IsUnique();
+            
+            entity.HasIndex(mc => mc.IsActive);
+        });
+        
         builder.UseSnakeCaseNamingConvention();
     }
 }

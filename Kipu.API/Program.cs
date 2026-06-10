@@ -4,46 +4,56 @@ using Kipu.API.IAM.Application.Services;
 using Kipu.API.IAM.Domain.Repositories;
 using Kipu.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 using Kipu.API.IAM.Infrastructure.Services;
+using Kipu.API.Logistics.Application.Internal.CommandServices;
+using Kipu.API.Logistics.Application.Internal.QueryServices;
+using Kipu.API.Logistics.Application.Services;
+using Kipu.API.Logistics.Domain.Repositories;
+using Kipu.API.Logistics.Infrastructure.Persistence.EFC.Repositories;
 using Kipu.API.Projects.Application.Internal.CommandServices;
 using Kipu.API.Projects.Application.Internal.QueryServices;
 using Kipu.API.Projects.Application.Services;
 using Kipu.API.Projects.Domain.Repositories;
 using Kipu.API.Projects.Infrastructure.Persistence.EFC.Repositories;
+using Kipu.API.Resources;
 using Kipu.API.Shared.Domain.Repositories;
 using Kipu.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
 // Add services to the container.
 
-builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()));
+builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()))
+    .AddDataAnnotationsLocalization();;
 
-// Add database Connection
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-builder.Services.AddDbContext<AppDbContext>(
-    options =>
+// Register RFC 7807 ProblemDetails payloads for centralized exception handling.
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
     {
-        if (connectionString != null)
-            if (builder.Environment.IsDevelopment())
-                options.UseMySQL(connectionString)
-                    .LogTo(Console.WriteLine, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                    .EnableDetailedErrors();
-            else if (builder.Environment.IsProduction())
-                options.UseMySQL(connectionString)
-                    .LogTo(Console.WriteLine, LogLevel.Information)
-                    .EnableDetailedErrors();
-    });
+        if (context.ProblemDetails.Status is null or >= 500)
+        {
+            var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<SharedResource>>();
+            context.ProblemDetails.Title ??= localizer["UnexpectedServerError"].Value;
+            context.ProblemDetails.Detail ??= localizer["UnexpectedErrorProcessingRequest"].Value;
+        }
+    };
+});
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(
     c =>
     {
+        c.EnableAnnotations();
         c.SwaggerDoc("v1",
             new OpenApiInfo
             {
@@ -64,9 +74,6 @@ builder.Services.AddSwaggerGen(
             });
     });
 
-// Configure Lowercase URLs
-builder.Services.AddRouting(options => options.LowercaseUrls = true);
-
 // Add CORS Policy
 builder.Services.AddCors(options =>
 {
@@ -75,6 +82,26 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
+
+// Add database Connection
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<AppDbContext>(
+    options =>
+    {
+        if (connectionString != null)
+            if (builder.Environment.IsDevelopment())
+                options.UseMySQL(connectionString)
+                    .LogTo(Console.WriteLine, LogLevel.Information)
+                    .EnableSensitiveDataLogging()
+                    .EnableDetailedErrors();
+            else if (builder.Environment.IsProduction())
+                options.UseMySQL(connectionString)
+                    .LogTo(Console.WriteLine, LogLevel.Information)
+                    .EnableDetailedErrors();
+    });
+
+// Dependency Injections
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -91,6 +118,20 @@ builder.Services.AddScoped<IProjectItemRepository, ProjectItemRepository>();
 builder.Services.AddScoped<IProjectCommandService, ProjectCommandService>();
 builder.Services.AddScoped<IProjectQueryService, ProjectQueryService>();
 
+// Logistics Bounded Context Dependency Injections
+
+builder.Services.AddScoped<IMaterialInventoryRepository, MaterialInventoryRepository>();
+builder.Services.AddScoped<IMaterialInventoryCommandService, MaterialInventoryCommandService>();
+builder.Services.AddScoped<IMaterialInventoryQueryService, MaterialInventoryQueryService>();
+
+builder.Services.AddScoped<IMaterialCatalogRepository, MaterialCatalogRepository>();
+builder.Services.AddScoped<IMaterialCatalogCommandService, MaterialCatalogCommandService>();
+builder.Services.AddScoped<IMaterialCatalogQueryService, MaterialCatalogQueryService>();
+
+builder.Services.AddScoped<IMaterialCategoryRepository, MaterialCategoryRepository>();
+builder.Services.AddScoped<IMaterialCategoryCommandService, MaterialCategoryCommandService>();
+builder.Services.AddScoped<IMaterialCategoryQueryService, MaterialCategoryQueryService>();
+
 var app = builder.Build();
 
 // Verify Database Objects are created
@@ -98,13 +139,25 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
-    context.Database.EnsureCreated();
+    context.Database.Migrate();
 }
+
+// Configure the HTTP request pipeline.
+app.UseExceptionHandler();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseCors("AllowAllPolicy");
+
+// Localization Configuration
+string[] supportedCultures = ["en", "es"];
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+localizationOptions.ApplyCurrentCultureToResponseHeaders = true;
+app.UseRequestLocalization(localizationOptions);
 
 app.UseHttpsRedirection();
 
