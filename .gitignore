@@ -1,0 +1,17 @@
+/Kipu.API.sln
+# Build output
+**/bin/
+**/obj/
+*.user
+*.suo
+*.cache
+
+# IDE
+.idea/
+.vscode/
+*.DotSettings.user
+
+# dotnet
+*.lock.json
+*.deps.json
+*.runtimeconfig.json
