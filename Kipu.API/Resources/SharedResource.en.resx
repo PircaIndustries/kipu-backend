@@ -36,4 +36,61 @@
     <data name="InvalidMaterialInventoryRequest" xml:space="preserve">
         <value>The provided material inventory data is invalid. Please check your inputs.</value>
     </data>
+    <data name="MaterialRequestNotFound" xml:space="preserve">
+        <value>The material request was not found.</value>
+    </data>
+    <data name="MaterialRequestAlreadyAccepted" xml:space="preserve">
+        <value>Cannot update a material request that has been accepted.</value>
+    </data>
+    <data name="MaterialRequestAlreadyRefused" xml:space="preserve">
+        <value>Cannot update a material request that has been refused.</value>
+    </data>
+    <data name="InvalidMaterialRequestRequest" xml:space="preserve">
+        <value>The provided material request data is invalid. Please check your inputs.</value>
+    </data>
+    <data name="InvalidMaterialRequestStatus" xml:space="preserve">
+        <value>Invalid status value. Valid values are: Pending, Accepted, Refused.</value>
+    </data>
+    <data name="UnexpectedErrorCreatingMaterialRequest" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to create the material request.</value>
+    </data>
+    <data name="SupplierNotFound" xml:space="preserve">
+        <value>The supplier was not found.</value>
+    </data>
+    <data name="SupplierNotFoundByRuc" xml:space="preserve">
+        <value>The supplier was not found for the given RUC.</value>
+    </data>
+    <data name="InvalidSupplierRequest" xml:space="preserve">
+        <value>The provided supplier data is invalid. Please check your inputs.</value>
+    </data>
+    <data name="UnexpectedErrorCreatingSupplier" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to create the supplier.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingSupplier" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to update the supplier.</value>
+    </data>
+    <data name="SupplierDuplicated" xml:space="preserve">
+        <value>A supplier with the given RUC already exists.</value>
+    </data>
+    <data name="SupplierDuplicatedRuc" xml:space="preserve">
+        <value>The RUC already exists for another supplier.</value>
+    </data>
+    <data name="InvalidMaterialCatalogRequest" xml:space="preserve">
+        <value>The provided material catalog data is invalid. Please check your inputs.</value>
+    </data>
+    <data name="UnexpectedErrorCreatingMaterialCatalog" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to create the material catalog.</value>
+    </data>
+    <data name="MaterialCatalogNotFound" xml:space="preserve">
+        <value>The material catalog was not found.</value>
+    </data>
+    <data name="InvalidMaterialCategoryRequest" xml:space="preserve">
+        <value>The provided material category data is invalid. Please check your inputs.</value>
+    </data>
+    <data name="UnexpectedErrorCreatingMaterialCategory" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to create the material category.</value>
+    </data>
+    <data name="MaterialCategoryNotFound" xml:space="preserve">
+        <value>The material category was not found.</value>
+    </data>
 </root>

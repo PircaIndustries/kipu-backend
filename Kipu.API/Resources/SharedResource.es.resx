@@ -36,4 +36,61 @@
     <data name="InvalidMaterialInventoryRequest" xml:space="preserve">
         <value>Los datos proporcionados para el inventario de materiales son inválidos. Por favor, verifique la información.</value>
     </data>
+    <data name="MaterialRequestNotFound" xml:space="preserve">
+        <value>La solicitud de material no fue encontrada.</value>
+    </data>
+    <data name="MaterialRequestAlreadyAccepted" xml:space="preserve">
+        <value>No se puede actualizar una solicitud de material que ha sido aceptada.</value>
+    </data>
+    <data name="MaterialRequestAlreadyRefused" xml:space="preserve">
+        <value>No se puede actualizar una solicitud de material que ha sido rechazada.</value>
+    </data>
+    <data name="InvalidMaterialRequestRequest" xml:space="preserve">
+        <value>Los datos proporcionados para la solicitud de material son inválidos. Por favor, verifique la información.</value>
+    </data>
+    <data name="InvalidMaterialRequestStatus" xml:space="preserve">
+        <value>Valor de estado inválido. Los valores válidos son: Pending, Accepted, Refused.</value>
+    </data>
+    <data name="UnexpectedErrorCreatingMaterialRequest" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar crear la solicitud de material.</value>
+    </data>
+    <data name="SupplierNotFound" xml:space="preserve">
+        <value>El proveedor no fue encontrado.</value>
+    </data>
+    <data name="SupplierNotFoundByRuc" xml:space="preserve">
+        <value>No se encontró un proveedor con el RUC proporcionado.</value>
+    </data>
+    <data name="InvalidSupplierRequest" xml:space="preserve">
+        <value>Los datos proporcionados del proveedor son inválidos. Por favor, verifique la información.</value>
+    </data>
+    <data name="UnexpectedErrorCreatingSupplier" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar crear el proveedor.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingSupplier" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar actualizar el proveedor.</value>
+    </data>
+    <data name="SupplierDuplicated" xml:space="preserve">
+        <value>Ya existe un proveedor con el RUC proporcionado.</value>
+    </data>
+    <data name="SupplierDuplicatedRuc" xml:space="preserve">
+        <value>El RUC ya existe para otro proveedor.</value>
+    </data>
+    <data name="InvalidMaterialCatalogRequest" xml:space="preserve">
+        <value>Los datos proporcionados para el catálogo de materiales son inválidos. Por favor, verifique la información.</value>
+    </data>
+    <data name="UnexpectedErrorCreatingMaterialCatalog" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar crear el catálogo de materiales.</value>
+    </data>
+    <data name="MaterialCatalogNotFound" xml:space="preserve">
+        <value>El catálogo de materiales no fue encontrado.</value>
+    </data>
+    <data name="InvalidMaterialCategoryRequest" xml:space="preserve">
+        <value>Los datos proporcionados para la categoría de materiales son inválidos. Por favor, verifique la información.</value>
+    </data>
+    <data name="UnexpectedErrorCreatingMaterialCategory" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar crear la categoría de materiales.</value>
+    </data>
+    <data name="MaterialCategoryNotFound" xml:space="preserve">
+        <value>La categoría de materiales no fue encontrada.</value>
+    </data>
 </root>
