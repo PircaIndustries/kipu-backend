@@ -6,7 +6,6 @@ using Kipu.API.Logistics.Domain.Repositories;
 using Kipu.API.Shared.Application.Patterns;
 using Kipu.API.Shared.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
-
 namespace Kipu.API.Logistics.Application.Internal.CommandServices;
 
 public class MaterialInventoryCommandService(

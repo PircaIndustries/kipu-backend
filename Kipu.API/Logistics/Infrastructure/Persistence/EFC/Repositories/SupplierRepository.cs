@@ -10,14 +10,11 @@ namespace Kipu.API.Logistics.Infrastructure.Persistence.EFC.Repositories;
 public class SupplierRepository(AppDbContext context)
 :BaseRepository<Supplier>(context), ISupplierRepository
 {
-    public async Task<IEnumerable<Supplier>> FindByRuc(Ruc ruc, CancellationToken cancellationToken = default)
+    public async Task<Supplier> FindByRuc(Ruc ruc, CancellationToken cancellationToken = default)
     {
-        return await Context.Set<Supplier>()
-            .Where(f => f.Ruc == ruc)
-            .ToListAsync(cancellationToken);
+        return await Context.Set<Supplier>().FirstOrDefaultAsync(f => f.Ruc == ruc, cancellationToken);
     }
-
-    public async Task<IEnumerable<Supplier>> FindByIsActive(Boolean isActive, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Supplier?>> FindByIsActive(Boolean isActive, CancellationToken cancellationToken = default)
     {
         return await Context.Set<Supplier>()
             .Where(f => f.IsActive == isActive)
