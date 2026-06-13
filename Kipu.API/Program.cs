@@ -136,6 +136,10 @@ builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierCommandService, SupplierCommandService>();
 builder.Services.AddScoped<ISupplierQueryService, SupplierQueryService>();
 
+builder.Services.AddScoped<IMaterialRequestRepository, MaterialRequestRepository>();
+builder.Services.AddScoped<IMaterialRequestCommandService, MaterialRequestCommandService>();
+builder.Services.AddScoped<IMaterialRequestQueryService, MaterialRequestQueryService>();
+
 var app = builder.Build();
 
 // Verify Database Objects are created

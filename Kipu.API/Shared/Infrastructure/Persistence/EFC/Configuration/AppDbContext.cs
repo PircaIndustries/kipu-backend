@@ -17,7 +17,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<MaterialInventory> MaterialInventories { get; set; }
     public DbSet<MaterialCatalog> MaterialCatalogs { get; set; }
     public DbSet<MaterialCategory> MaterialCategories { get; set; }
-    public DbSet<Supplier> Suppliers { get; set; } 
+    public DbSet<Supplier> Suppliers { get; set; }
+    public DbSet<MaterialRequest> MaterialRequests { get; set; }
+    public DbSet<MaterialRequestItem> MaterialRequestItems { get; set; }
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -173,6 +175,75 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             entity.HasIndex(s => s.Ruc).IsUnique();
             entity.HasIndex(s => s.Email).IsUnique();
             entity.HasIndex(s => s.IsActive);
+        });
+        // MaterialRequest mapping
+        builder.Entity<MaterialRequest>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Id)
+                .IsRequired()
+                .ValueGeneratedOnAdd();
+
+            entity.Property(r => r.Deadline)
+                .IsRequired();
+
+            entity.Property(r => r.RequestStatus)
+                .HasConversion<int>()
+                .IsRequired();
+
+            entity.Property(r => r.RequestPriority)
+                .HasConversion<int>()
+                .IsRequired();
+
+            entity.Property(r => r.DeliveryLocation)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            entity.Property(r => r.BudgetLineId)
+                .HasConversion(b => b.Value, v => new BudgetLineId(v))
+                .IsRequired();
+
+            entity.Property(r => r.Purpose)
+                .IsRequired()
+                .HasMaxLength(1000);
+
+            entity.Property(r => r.AdditionalNotes)
+                .HasMaxLength(2000);
+
+            entity.Property(r => r.RequestedBy)
+                .HasConversion(u => u.Value, v => new UserId(v))
+                .IsRequired();
+
+            entity.HasIndex(r => r.RequestStatus);
+        });
+        // MaterialRequestItem mapping
+        builder.Entity<MaterialRequestItem>(entity =>
+        {
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.Id)
+                .IsRequired()
+                .ValueGeneratedOnAdd();
+
+            entity.Property(i => i.MaterialCatalogId)
+                .HasConversion(m => m.Value, v => new MaterialCatalogId(v))
+                .IsRequired();
+
+            entity.Property(i => i.SupplierId)
+                .HasConversion(s => s.Value, v => new SupplierId(v))
+                .IsRequired();
+
+            entity.Property(i => i.Quantity)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            entity.Property(i => i.UnitPrice)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            entity.HasOne<MaterialRequest>()
+                .WithMany(r => r.Items)
+                .HasForeignKey(i => i.MaterialRequestId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
         builder.UseSnakeCaseNamingConvention();
     }
