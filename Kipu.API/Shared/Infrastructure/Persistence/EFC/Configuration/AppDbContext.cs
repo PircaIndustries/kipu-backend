@@ -17,6 +17,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<MaterialInventory> MaterialInventories { get; set; }
     public DbSet<MaterialCatalog> MaterialCatalogs { get; set; }
     public DbSet<MaterialCategory> MaterialCategories { get; set; }
+    public DbSet<Supplier> Suppliers { get; set; } 
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -130,7 +131,49 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             
             entity.HasIndex(mc => mc.IsActive);
         });
-        
+        // Supplier mapping
+        builder.Entity<Supplier>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Id)
+                .IsRequired()
+                .ValueGeneratedOnAdd();
+
+            entity.Property(s => s.Ruc)
+                .HasConversion(r => r.Value, v => new Ruc(v))
+                .IsRequired()
+                .HasMaxLength(11);
+
+            entity.Property(s => s.SocialReason)
+                .HasConversion(r => r.Value, v => new SocialReason(v))
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(s => s.Contact)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(s => s.Phone)
+                .HasConversion(p => p.Value, v => new Phone(v))
+                .IsRequired()
+                .HasMaxLength(20);
+
+            entity.Property(s => s.Email)
+                .HasConversion(e => e.Value, v => new Email(v))
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(s => s.PaymentTerms)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            entity.Property(s => s.IsActive)
+                .IsRequired()
+                .HasDefaultValue(true);
+            entity.HasIndex(s => s.Ruc).IsUnique();
+            entity.HasIndex(s => s.Email).IsUnique();
+            entity.HasIndex(s => s.IsActive);
+        });
         builder.UseSnakeCaseNamingConvention();
     }
 }

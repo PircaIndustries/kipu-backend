@@ -6,7 +6,7 @@ namespace Kipu.API.Logistics.Domain.Repositories;
 
 public interface ISupplierRepository : IBaseRepository<Supplier>
 {
-    Task<IEnumerable<Supplier>> FindByRuc(Ruc ruc, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Supplier>> FindByIsActive(Boolean isActive, CancellationToken cancellationToken = default);
+    Task<Supplier> FindByRuc(Ruc ruc, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Supplier?>> FindByIsActive(Boolean isActive, CancellationToken cancellationToken = default);
 
 }
