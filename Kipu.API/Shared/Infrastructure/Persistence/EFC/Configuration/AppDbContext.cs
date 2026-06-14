@@ -1,3 +1,4 @@
+using Kipu.API.Document.Domain.Model.ValueObjects;
 using Kipu.API.IAM.Domain.Model.Aggregates;
 using Kipu.API.Projects.Domain.Model.Aggregates;
 using Kipu.API.Logistics.Domain.Model.Aggregates;
@@ -5,8 +6,11 @@ using Kipu.API.Logistics.Domain.Model.ValueObjects;
 using Kipu.API.Logistics.Domain.Model.ValueObjects.External;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Interceptors;
+using Kipu.API.Team.TeamUser.domain.model.Aggregates;
+using Kipu.API.Team.TeamWorker.Domain.Model.Aggregates;
+using Kipu.API.Team.TeamWorker.Domain.Model.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-
+using TeamUserId = Kipu.API.Team.TeamUser.domain.model.ValueObjects.UserId;
 namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
 /// <summary>
@@ -244,7 +248,107 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .WithMany(r => r.Items)
                 .HasForeignKey(i => i.MaterialRequestId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
         });
         builder.UseSnakeCaseNamingConvention();
+        
+        // TEAM USERS ---
+        
+        builder.Entity<TeamUser>().ToTable("team_user");
+        
+        builder.Entity<TeamUser>().HasKey(t => t.Id);
+        builder.Entity<TeamUser>()
+            .Property(t => t.Id)
+            .HasColumnName("id")
+            .HasConversion(id => id.Value, value => new TeamUserId(value)) 
+            .IsRequired();
+
+        builder.Entity<TeamUser>().OwnsOne(t => t.Email, e =>
+        {
+            e.Property(p => p.Address).HasColumnName("email"); 
+        });
+
+        builder.Entity<TeamUser>().Property(t => t.FullName).HasColumnName("full_name");
+        builder.Entity<TeamUser>().Property(t => t.Role).HasColumnName("role");
+        builder.Entity<TeamUser>().Property(t => t.ProjectId).HasColumnName("project_id");
+        builder.Entity<TeamUser>().Property(t => t.IsActive).HasColumnName("is_active");
+        
+        builder.Entity<TeamUser>().Property(t => t.CreatedAt).HasColumnName("created_at");
+        builder.Entity<TeamUser>().Property(t => t.UpdatedAt).HasColumnName("updated_at");
+        
+        // TEAM WORKERS ---
+        
+        builder.Entity<TeamWorker>().ToTable("team_worker"); 
+
+        builder.Entity<TeamWorker>().HasKey(w => w.Id);
+        builder.Entity<TeamWorker>()
+            .Property(w => w.Id)
+            .HasColumnName("id")
+            .HasConversion(id => id.Value, value => new WorkerId(value))
+            .IsRequired();
+
+        builder.Entity<TeamWorker>().Property(w => w.Dni).HasColumnName("dni");
+        builder.Entity<TeamWorker>().Property(w => w.FullName).HasColumnName("full_name");
+        builder.Entity<TeamWorker>().Property(w => w.Role).HasColumnName("role");
+        builder.Entity<TeamWorker>().Property(w => w.IsActive).HasColumnName("isActive");
+        builder.Entity<TeamWorker>().Property(w => w.ProjectId).HasColumnName("project_id");
+
+        builder.Entity<TeamWorker>().Property(w => w.CreatedAt).HasColumnName("created_at");
+        builder.Entity<TeamWorker>().Property(w => w.UpdatedAt).HasColumnName("updated_at");
+
+        builder.Entity<TeamWorker>().OwnsMany(w => w.Machineries, m =>
+        {
+            m.ToTable("team_workerXmachinery"); 
+    
+            m.HasKey(wm => wm.Id);
+            m.Property(wm => wm.Id).HasColumnName("id").ValueGeneratedOnAdd();
+    
+            m.WithOwner().HasForeignKey("id_team_worker"); 
+    
+            m.Property(wm => wm.MachineryId).HasColumnName("id_machinery");
+            m.Property(wm => wm.FullName).HasColumnName("fullName");
+        });
+
+        builder.Entity<TeamWorker>().Metadata
+            .FindNavigation(nameof(TeamWorker.Machineries))!
+            .SetPropertyAccessMode(PropertyAccessMode.Field);
+        
+        // DOCUMENTS ---
+        
+        builder.Entity<Document.Domain.Model.Aggregates.Document>().ToTable("document"); 
+
+        builder.Entity<Document.Domain.Model.Aggregates.Document>().HasKey(d => d.Id);
+        builder.Entity<Document.Domain.Model.Aggregates.Document>()
+            .Property(d => d.Id)
+            .HasColumnName("id")
+            .HasConversion(id => id.Value, value => new DocumentId(value))
+            .IsRequired();
+
+        builder.Entity<Document.Domain.Model.Aggregates.Document>().Property(d => d.Type).HasColumnName("type");
+        builder.Entity<Document.Domain.Model.Aggregates.Document>().Property(d => d.IsSigned).HasColumnName("is_signed");
+        builder.Entity<Document.Domain.Model.Aggregates.Document>().Property(d => d.DigitalSignatureToken).HasColumnName("digital_signature_token");
+        builder.Entity<Document.Domain.Model.Aggregates.Document>().Property(d => d.Deadline).HasColumnName("deadline");
+        builder.Entity<Document.Domain.Model.Aggregates.Document>().Property(d => d.ProjectId).HasColumnName("project_id");
+
+        builder.Entity<Document.Domain.Model.Aggregates.Document>().Property(d => d.CreatedAt).HasColumnName("created_at");
+        builder.Entity<Document.Domain.Model.Aggregates.Document>().Property(d => d.UpdatedAt).HasColumnName("updated_at");
+
+        builder.Entity<Document.Domain.Model.Aggregates.Document>().OwnsMany(d => d.Participants, p =>
+        {
+            p.ToTable("documentXteam_user"); 
+            
+            p.HasKey(dp => dp.Id);
+            p.Property(dp => dp.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            
+            p.WithOwner().HasForeignKey("id_document"); 
+            
+            p.Property(dp => dp.TeamUserId).HasColumnName("id_team_user");
+            p.Property(dp => dp.FullName).HasColumnName("full_name");
+            p.Property(dp => dp.SignedAt).HasColumnName("signed_at");
+        });
+
+        builder.Entity<Document.Domain.Model.Aggregates.Document>().Metadata
+            .FindNavigation(nameof(Document.Domain.Model.Aggregates.Document.Participants))!
+            .SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }

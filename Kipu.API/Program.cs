@@ -1,3 +1,8 @@
+using Kipu.API.Document.Application.Internal.CommandServices;
+using Kipu.API.Document.Application.Internal.QueryServices;
+using Kipu.API.Document.Application.Services;
+using Kipu.API.Document.Domain.Repositories;
+using Kipu.API.Document.Infraestructure.Persistence.EFC.Repositories;
 using Kipu.API.IAM.Application.Internal.CommandServices;
 using Kipu.API.IAM.Application.Internal.QueryServices;
 using Kipu.API.IAM.Application.Services;
@@ -19,6 +24,16 @@ using Kipu.API.Shared.Domain.Repositories;
 using Kipu.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Repositories;
+using Kipu.API.Team.TeamUser.application.Internal.CommandServices;
+using Kipu.API.Team.TeamUser.application.Internal.QueryServices;
+using Kipu.API.Team.TeamUser.application.Services;
+using Kipu.API.Team.TeamUser.domain.Repositories;
+using Kipu.API.Team.TeamUser.Infraestructure.Persistence.EFC.Repositories;
+using Kipu.API.Team.TeamWorker.Application.Internal.CommandServices;
+using Kipu.API.Team.TeamWorker.Application.Internal.QueryServices;
+using Kipu.API.Team.TeamWorker.Application.Services;
+using Kipu.API.Team.TeamWorker.Domain.Repositories;
+using Kipu.API.Team.TeamWorker.Infraestructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.OpenApi;
@@ -139,6 +154,24 @@ builder.Services.AddScoped<ISupplierQueryService, SupplierQueryService>();
 builder.Services.AddScoped<IMaterialRequestRepository, MaterialRequestRepository>();
 builder.Services.AddScoped<IMaterialRequestCommandService, MaterialRequestCommandService>();
 builder.Services.AddScoped<IMaterialRequestQueryService, MaterialRequestQueryService>();
+
+// Team UsersBounded Context Dependency Injections 
+
+builder.Services.AddScoped<ITeamUserRepository, TeamUserRepository>();
+builder.Services.AddScoped<ITeamUserCommandService, TeamUserCommandService>();
+builder.Services.AddScoped<ITeamUserQueryService, TeamUserQueryService>();
+
+// Team Workers Bounded Context Dependency Injections 
+
+builder.Services.AddScoped<ITeamWorkerRepository, TeamWorkerRepository>();
+builder.Services.AddScoped<ITeamWorkerCommandService, TeamWorkerCommandService>();
+builder.Services.AddScoped<ITeamWorkerQueryService, TeamWorkerQueryService>();
+
+// Documents Bounded Context Dependency Injections 
+
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+builder.Services.AddScoped<IDocumentCommandService, DocumentCommandService>();
+builder.Services.AddScoped<IDocumentQueryService, DocumentQueryService>();
 
 var app = builder.Build();
 
