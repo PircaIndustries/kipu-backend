@@ -24,6 +24,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<MaterialRequest> MaterialRequests { get; set; }
     public DbSet<MaterialRequestItem> MaterialRequestItems { get; set; }
+    public DbSet<Kipu.API.Budget.Domain.Model.Aggregates.BudgetItem> BudgetItems { get; set; }
+    public DbSet<Kipu.API.Progress.Domain.Model.Aggregates.ProgressItem> ProgressItems { get; set; }
+    public DbSet<Kipu.API.Budget.Domain.Model.Entities.BudgetTransaction> BudgetTransactions { get; set; }
+    
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -350,5 +354,51 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Document.Domain.Model.Aggregates.Document>().Metadata
             .FindNavigation(nameof(Document.Domain.Model.Aggregates.Document.Participants))!
             .SetPropertyAccessMode(PropertyAccessMode.Field);
+        
+        builder.Entity<Kipu.API.Budget.Domain.Model.Aggregates.BudgetItem>(entity =>
+        {
+            entity.ToTable("budget_items");
+            entity.HasKey(b => b.Id);
+            entity.Property(b => b.Id).ValueGeneratedOnAdd();
+            entity.Property(b => b.Details).HasMaxLength(500);
+            entity.Property(b => b.AssignedBudget).HasColumnType("decimal(18,2)");
+            entity.Property(b => b.ExecutedAmount).HasColumnType("decimal(18,2)");
+
+            entity.OwnsOne(b => b.ActivityName, activity =>
+            {
+                activity.Property(a => a.Value)
+                    .HasColumnName("activity_name")
+                    .HasMaxLength(150)
+                    .IsRequired();
+            });
+
+            entity.HasMany(b => b.Transactions)
+                .WithOne()
+                .HasForeignKey(t => t.BudgetItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Kipu.API.Budget.Domain.Model.Entities.BudgetTransaction>(entity =>
+        {
+            entity.ToTable("budget_transactions");
+            entity.HasKey(t => t.Id);
+            entity.Property(t => t.Id).ValueGeneratedOnAdd();
+            entity.Property(t => t.Amount).HasColumnType("decimal(18,2)");
+            entity.Property(t => t.Description).HasMaxLength(250);
+            entity.Property(t => t.Date).IsRequired();
+        });
+        
+        builder.Entity<Kipu.API.Progress.Domain.Model.Aggregates.ProgressItem>(entity =>
+        {
+            entity.ToTable("progress_items");
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.Id).ValueGeneratedOnAdd();
+            entity.Property(p => p.PlannedPercentage).HasColumnType("decimal(5,2)");
+            entity.Property(p => p.ActualPercentage).HasColumnType("decimal(5,2)");
+            entity.OwnsOne(p => p.TaskName, tn =>
+            {
+                tn.Property(t => t.Value).HasColumnName("task_name").HasMaxLength(150).IsRequired();
+            });
+        });
     }
 }
