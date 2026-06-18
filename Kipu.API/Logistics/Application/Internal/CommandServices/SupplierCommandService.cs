@@ -168,6 +168,30 @@ public class SupplierCommandService(
         }
     }
 
+    public async Task<Result<Supplier, UpdateSupplierError>> HandleDelete(int id,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var supplier = await supplierRepository.FindByIdAsync(id, cancellationToken);
+            if (supplier is null)
+            {
+                logger.LogWarning("Supplier with ID {Id} not found", id);
+                return new Result<Supplier, UpdateSupplierError>.Failure(
+                    UpdateSupplierError.SupplierNotFound);
+            }
+            supplierRepository.Remove(supplier);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return new Result<Supplier, UpdateSupplierError>.Success(supplier);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error deleting supplier with ID {Id}", id);
+            return new Result<Supplier, UpdateSupplierError>.Failure(
+                UpdateSupplierError.UnexpectedError);
+        }
+    }
+
     private static bool IsDuplicateKeyViolation(DbUpdateException exception)
     {
         for (Exception? current = exception; current is not null; current = current.InnerException)

@@ -8,4 +8,5 @@ public interface ISupplierQueryService
     Task<Supplier?> Handle(GetSupplierByIdQuery query, CancellationToken cancellationToken = default);
     Task<Supplier?> Handle(GetAllSupplierByRucQuery query, CancellationToken cancellationToken = default);
     Task<IEnumerable<Supplier?>> Handle(GetAllSupplierByIsActiveQuery query, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Supplier?>> Handle(GetAllSuppliersQuery query, CancellationToken cancellationToken = default);
 }

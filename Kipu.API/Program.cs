@@ -47,7 +47,7 @@ builder.Services.AddLocalization(options => options.ResourcesPath = "Resources")
 // Add services to the container.
 
 builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()))
-    .AddDataAnnotationsLocalization();;
+    .AddDataAnnotationsLocalization();
 
 // Register RFC 7807 ProblemDetails payloads for centralized exception handling.
 builder.Services.AddProblemDetails(options =>
@@ -154,6 +154,10 @@ builder.Services.AddScoped<ISupplierQueryService, SupplierQueryService>();
 builder.Services.AddScoped<IMaterialRequestRepository, MaterialRequestRepository>();
 builder.Services.AddScoped<IMaterialRequestCommandService, MaterialRequestCommandService>();
 builder.Services.AddScoped<IMaterialRequestQueryService, MaterialRequestQueryService>();
+
+builder.Services.AddScoped<ISupplierOfferRepository, SupplierOfferRepository>();
+builder.Services.AddScoped<ISupplierOfferCommandService, SupplierOfferCommandService>();
+builder.Services.AddScoped<ISupplierOfferQueryService, SupplierOfferQueryService>();
 
 // Team UsersBounded Context Dependency Injections 
 

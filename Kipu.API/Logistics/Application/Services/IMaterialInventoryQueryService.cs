@@ -8,4 +8,6 @@ public interface IMaterialInventoryQueryService
     Task<IEnumerable<MaterialInventory>> Handle(GetAllMaterialInventoryByCategoryIdQuery query,
         CancellationToken cancellationToken = default);
     Task<MaterialInventory?> Handle(GetMaterialInventoryByIdQuery query, CancellationToken cancellationToken = default);
+    Task<IEnumerable<MaterialInventory?>> Handle(GetAllMaterialInventoryQuery query, CancellationToken cancellationToken = default);
+
 }

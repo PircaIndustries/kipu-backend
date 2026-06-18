@@ -56,6 +56,72 @@ public class MaterialCategoryCommandService(
                 CreateMaterialCategoryError.UnexpectedError);
         }
     }
+    public async Task<Result<MaterialCategory, UpdateMaterialCategoryError>> Handle(
+        UpdateMaterialCategoryCommand command, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var materialCategory = await materialCategoryRepository.FindByIdAsync(command.Id, cancellationToken);
+            if (materialCategory is null)
+            {
+                logger.LogWarning("Material category with ID {Id} not found", command.Id);
+                return new Result<MaterialCategory, UpdateMaterialCategoryError>.Failure(
+                    UpdateMaterialCategoryError.MaterialCategoryNotFound);
+            }
+            materialCategory.Update(command);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return new Result<MaterialCategory, UpdateMaterialCategoryError>.Success(materialCategory);
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid arguments when updating material category with ID {Id}", command.Id);
+            return new Result<MaterialCategory, UpdateMaterialCategoryError>.Failure(
+                UpdateMaterialCategoryError.UnexpectedError);
+        }
+        catch (DbUpdateException ex) when (IsDuplicateKeyViolation(ex))
+        {
+            logger.LogWarning(ex, "Duplicate key violation updating material category with ID {Id}", command.Id);
+            return new Result<MaterialCategory, UpdateMaterialCategoryError>.Failure(
+                UpdateMaterialCategoryError.DuplicatedMaterialCategory);
+        }
+        catch (DbUpdateException ex)
+        {
+            logger.LogError(ex, "Database update failed updating material category with ID {Id}", command.Id);
+            return new Result<MaterialCategory, UpdateMaterialCategoryError>.Failure(
+                UpdateMaterialCategoryError.UnexpectedError);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error updating material category with ID {Id}", command.Id);
+            return new Result<MaterialCategory, UpdateMaterialCategoryError>.Failure(
+                UpdateMaterialCategoryError.UnexpectedError);
+        }
+    }
+
+    public async Task<Result<MaterialCategory, UpdateMaterialCategoryError>> HandleDelete(int id,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var materialCategory = await materialCategoryRepository.FindByIdAsync(id, cancellationToken);
+            if (materialCategory is null)
+            {
+                logger.LogWarning("Material category with ID {Id} not found for deletion", id);
+                return new Result<MaterialCategory, UpdateMaterialCategoryError>.Failure(
+                    UpdateMaterialCategoryError.MaterialCategoryNotFound);
+            }
+            materialCategoryRepository.Remove(materialCategory);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return new Result<MaterialCategory, UpdateMaterialCategoryError>.Success(materialCategory);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error deleting material category with ID {Id}", id);
+            return new Result<MaterialCategory, UpdateMaterialCategoryError>.Failure(
+                UpdateMaterialCategoryError.UnexpectedError);
+        }
+    }
+
     private static bool IsDuplicateKeyViolation(DbUpdateException exception)
     {
         for (Exception? current = exception; current is not null; current = current.InnerException)

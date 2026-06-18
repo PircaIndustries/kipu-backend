@@ -1,11 +1,14 @@
 using System.Net.Mime;
+using Kipu.API.Logistics.Application.Errors;
 using Kipu.API.Logistics.Application.Services;
+using Kipu.API.Logistics.Domain.Model.Aggregates;
 using Kipu.API.Logistics.Domain.Model.Commands;
 using Kipu.API.Logistics.Domain.Model.Queries;
 using Kipu.API.Logistics.Domain.Model.ValueObjects;
 using Kipu.API.Logistics.Interfaces.REST.Resources.Supplier;
 using Kipu.API.Logistics.Interfaces.REST.Transform.Supplier;
 using Kipu.API.Resources;
+using Kipu.API.Shared.Application.Patterns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
@@ -95,6 +98,22 @@ public class SupplierController(
     }
 
     /// <summary>
+    /// Gets all suppliers
+    /// </summary>
+    [HttpGet]
+    [SwaggerOperation(
+        Summary = "Gets all Suppliers",
+        Description = "Retrieves all suppliers",
+        OperationId = "GetAllSuppliers")]
+    [SwaggerResponse(200, "The suppliers were found", typeof(IEnumerable<SupplierResource>))]
+    public async Task<ActionResult> GetAllSuppliers(CancellationToken cancellationToken = default)
+    {
+        var suppliers = await supplierQueryService.Handle(new GetAllSuppliersQuery(), cancellationToken);
+        var resources = suppliers.Select(SupplierResourceFromEntityAssembler.ToResourceFromEntity);
+        return Ok(resources);
+    }
+
+    /// <summary>
     /// Gets a supplier by RUC (tax identification number)
     /// </summary>
     /// <param name="ruc">The supplier's RUC (11 digits)</param>
@@ -179,6 +198,39 @@ public class SupplierController(
         }
     }
     
+    /// <summary>
+    /// Deletes an existing supplier
+    /// </summary>
+    /// <param name="id">The supplier identifier</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>No content if deleted</returns>
+    [HttpDelete("{id}")]
+    [SwaggerOperation(
+        Summary = "Deletes a Supplier",
+        Description = "Deletes an existing supplier with the given ID.",
+        OperationId = "DeleteSupplier")]
+    [SwaggerResponse(204, "The supplier was deleted")]
+    [SwaggerResponse(404, "The supplier was not found", typeof(string))]
+    [SwaggerResponse(500, "Unexpected server error", typeof(ProblemDetails))]
+    public async Task<ActionResult> DeleteSupplier(int id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await supplierCommandService.HandleDelete(id, cancellationToken);
+            if (result is Result<Supplier, UpdateSupplierError>.Success)
+                return NoContent();
+            return NotFound(localizer["SupplierNotFound"].Value);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error deleting supplier with ID {Id}", id);
+            return Problem(
+                title: localizer["UnexpectedServerError"].Value,
+                detail: localizer["UnexpectedErrorDeletingSupplier"].Value,
+                statusCode: 500);
+        }
+    }
+
     /// <summary>
     /// Updates Partial an existing supplier
     /// </summary>

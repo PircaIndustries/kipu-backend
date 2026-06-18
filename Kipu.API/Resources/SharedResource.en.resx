@@ -69,6 +69,9 @@
     <data name="UnexpectedErrorUpdatingSupplier" xml:space="preserve">
         <value>An unexpected error occurred while attempting to update the supplier.</value>
     </data>
+    <data name="UnexpectedErrorDeletingSupplier" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to delete the supplier.</value>
+    </data>
     <data name="SupplierDuplicated" xml:space="preserve">
         <value>A supplier with the given RUC already exists.</value>
     </data>
@@ -92,5 +95,44 @@
     </data>
     <data name="MaterialCategoryNotFound" xml:space="preserve">
         <value>The material category was not found.</value>
+    </data>
+    <data name="MaterialCategoryDuplicated" xml:space="preserve">
+        <value>A material category with the given name already exists.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMaterialCategory" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to update the material category.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMaterialCategory" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to delete the material category.</value>
+    </data>
+    <data name="MaterialCatalogDuplicated" xml:space="preserve">
+        <value>A material catalog entry with the given name already exists.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMaterialCatalog" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to update the material catalog.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMaterialCatalog" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to delete the material catalog.</value>
+    </data>
+    <data name="CategoryNotFound" xml:space="preserve">
+        <value>The specified category was not found.</value>
+    </data>
+    <data name="MaterialInventoryNotFound" xml:space="preserve">
+        <value>The material inventory was not found.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMaterialInventory" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to update the material inventory.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMaterialInventory" xml:space="preserve">
+        <value>An unexpected error occurred while attempting to delete the material inventory.</value>
+    </data>
+    <data name="SupplierOfferDuplicated" xml:space="preserve">
+        <value>A supplier offer for this supplier and material already exists.</value>
+    </data>
+    <data name="SupplierOfferNotFound" xml:space="preserve">
+        <value>The supplier offer was not found.</value>
+    </data>
+    <data name="InvalidSupplierOfferRequest" xml:space="preserve">
+        <value>The provided supplier offer data is invalid.</value>
     </data>
 </root>

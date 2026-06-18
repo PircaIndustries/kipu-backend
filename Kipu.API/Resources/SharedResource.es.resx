@@ -69,6 +69,9 @@
     <data name="UnexpectedErrorUpdatingSupplier" xml:space="preserve">
         <value>Ocurrió un error inesperado al intentar actualizar el proveedor.</value>
     </data>
+    <data name="UnexpectedErrorDeletingSupplier" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar eliminar el proveedor.</value>
+    </data>
     <data name="SupplierDuplicated" xml:space="preserve">
         <value>Ya existe un proveedor con el RUC proporcionado.</value>
     </data>
@@ -92,5 +95,44 @@
     </data>
     <data name="MaterialCategoryNotFound" xml:space="preserve">
         <value>La categoría de materiales no fue encontrada.</value>
+    </data>
+    <data name="MaterialCategoryDuplicated" xml:space="preserve">
+        <value>Ya existe una categoría de materiales con ese nombre.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMaterialCategory" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar actualizar la categoría de materiales.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMaterialCategory" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar eliminar la categoría de materiales.</value>
+    </data>
+    <data name="MaterialCatalogDuplicated" xml:space="preserve">
+        <value>Ya existe una entrada en el catálogo de materiales con ese nombre.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMaterialCatalog" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar actualizar el catálogo de materiales.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMaterialCatalog" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar eliminar el catálogo de materiales.</value>
+    </data>
+    <data name="CategoryNotFound" xml:space="preserve">
+        <value>La categoría especificada no fue encontrada.</value>
+    </data>
+    <data name="MaterialInventoryNotFound" xml:space="preserve">
+        <value>El inventario de materiales no fue encontrado.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMaterialInventory" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar actualizar el inventario de materiales.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMaterialInventory" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar eliminar el inventario de materiales.</value>
+    </data>
+    <data name="SupplierOfferDuplicated" xml:space="preserve">
+        <value>Ya existe una oferta de proveedor para este proveedor y material.</value>
+    </data>
+    <data name="SupplierOfferNotFound" xml:space="preserve">
+        <value>La oferta de proveedor no fue encontrada.</value>
+    </data>
+    <data name="InvalidSupplierOfferRequest" xml:space="preserve">
+        <value>Los datos de la oferta de proveedor son inválidos.</value>
     </data>
 </root>

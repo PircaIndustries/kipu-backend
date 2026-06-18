@@ -18,6 +18,14 @@ public partial class MaterialCatalog
         CategoryId = command.CategoryId;
         MeasureUnit = command.MeasureUnit;
     }
+
+    public void Update(UpdateMaterialCatalogCommand command)
+    {
+        Name = command.Name;
+        CategoryId = command.CategoryId;
+        MeasureUnit = command.MeasureUnit;
+    }
+
     public int Id { get; private set; }
     public Name Name { get; private set; }
     public CategoryId CategoryId { get; private set; }

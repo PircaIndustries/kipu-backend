@@ -8,4 +8,6 @@ namespace Kipu.API.Logistics.Application.Services;
 public interface IMaterialInventoryCommandService
 {
     Task<Result<MaterialInventory, CreateMaterialInventoryError>> Handle(CreateMaterialInventoryCommand command, CancellationToken cancellationToken = default);
+    Task<Result<MaterialInventory, UpdateMaterialInventoryError>> Handle(UpdateMaterialInventoryCommand command, CancellationToken cancellationToken = default);
+    Task<Result<MaterialInventory, UpdateMaterialInventoryError>> HandleDelete(int id, CancellationToken cancellationToken = default);
 }
