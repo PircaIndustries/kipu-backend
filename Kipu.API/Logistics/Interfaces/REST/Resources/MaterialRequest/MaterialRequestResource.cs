@@ -20,7 +20,7 @@ public record MaterialRequestResource(
     string DeliveryLocation,
 
     [SwaggerParameter(Description = "The budget line ID")]
-    int BudgetLineId,
+    int? BudgetLineId,
 
     [SwaggerParameter(Description = "The purpose of the request")]
     string Purpose,

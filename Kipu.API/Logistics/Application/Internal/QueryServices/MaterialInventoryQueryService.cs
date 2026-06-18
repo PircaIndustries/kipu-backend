@@ -19,4 +19,10 @@ public class MaterialInventoryQueryService(IMaterialInventoryRepository material
     {
         return await materialInventoryRepository.FindByIdAsync(query.Id, cancellationToken);
     }
+
+    public async Task<IEnumerable<MaterialInventory?>> Handle(GetAllMaterialInventoryQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        return await materialInventoryRepository.ListAsync(cancellationToken);
+    }
 }

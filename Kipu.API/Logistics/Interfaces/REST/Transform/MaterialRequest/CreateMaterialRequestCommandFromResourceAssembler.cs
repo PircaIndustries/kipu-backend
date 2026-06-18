@@ -12,7 +12,7 @@ public static class CreateMaterialRequestCommandFromResourceAssembler
             resource.Deadline,
             Enum.Parse<RequestPriority>(resource.RequestPriority),
             resource.DeliveryLocation,
-            new BudgetLineId(resource.BudgetLineId),
+            resource.BudgetLineId.HasValue ? new BudgetLineId(resource.BudgetLineId.Value) : null,
             resource.Purpose,
             resource.AdditionalNotes ?? string.Empty,
             new UserId(resource.RequestedBy),

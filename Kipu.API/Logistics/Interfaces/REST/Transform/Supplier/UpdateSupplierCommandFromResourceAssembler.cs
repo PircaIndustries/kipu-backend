@@ -15,7 +15,7 @@ public static class UpdateSupplierCommandFromResourceAssembler
             resource.Contact,
             new Phone(resource.Phone),
             new Email(resource.Email),
-            resource.PaymentTerms,
+            resource.PaymentTerms ?? string.Empty,
             resource.IsActive
         );
     }

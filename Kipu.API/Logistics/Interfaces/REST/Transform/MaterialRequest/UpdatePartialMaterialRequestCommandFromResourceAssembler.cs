@@ -29,7 +29,8 @@ public static class UpdatePartialMaterialRequestCommandFromResourceAssembler
             resource.BudgetLineId.HasValue ? new BudgetLineId(resource.BudgetLineId.Value) : null,
             resource.Purpose,
             resource.AdditionalNotes,
-            items
+            items,
+            resource.RequestStatus is not null ? Enum.Parse<RequestStatus>(resource.RequestStatus) : null
         );
     }
 }

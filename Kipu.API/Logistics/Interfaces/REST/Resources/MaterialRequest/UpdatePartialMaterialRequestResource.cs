@@ -27,4 +27,7 @@ public record UpdatePartialMaterialRequestResource(
     string? AdditionalNotes,
 
     [SwaggerParameter(Description = "The items to add or update in the request (optional). Items with an existing ID are updated, items without ID are added.")]
-    List<UpdatePartialMaterialRequestItemResource>? Items);
+    List<UpdatePartialMaterialRequestItemResource>? Items,
+
+    [SwaggerParameter(Description = "The status to set (Pending, Accepted, Refused) (optional)")]
+    string? RequestStatus);

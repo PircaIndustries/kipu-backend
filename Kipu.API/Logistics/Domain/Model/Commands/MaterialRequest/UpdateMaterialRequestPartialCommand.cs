@@ -11,4 +11,5 @@ public record UpdateMaterialRequestPartialCommand(
     BudgetLineId? BudgetLineId = null,
     string? Purpose = null,
     string? AdditionalNotes = null,
-    List<UpdatePartialMaterialRequestItemCommand>? Items = null);
+    List<UpdatePartialMaterialRequestItemCommand>? Items = null,
+    RequestStatus? RequestStatus = null);

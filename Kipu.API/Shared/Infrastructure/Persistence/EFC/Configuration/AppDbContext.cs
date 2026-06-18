@@ -27,7 +27,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Kipu.API.Budget.Domain.Model.Aggregates.BudgetItem> BudgetItems { get; set; }
     public DbSet<Kipu.API.Progress.Domain.Model.Aggregates.ProgressItem> ProgressItems { get; set; }
     public DbSet<Kipu.API.Budget.Domain.Model.Entities.BudgetTransaction> BudgetTransactions { get; set; }
-    
+    public DbSet<SupplierOffer> SupplierOffers { get; set; }
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -208,8 +208,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .HasMaxLength(500);
 
             entity.Property(r => r.BudgetLineId)
-                .HasConversion(b => b.Value, v => new BudgetLineId(v))
-                .IsRequired();
+                .HasConversion(
+                    b => b == null ? (int?)null : b.Value,
+                    v => v.HasValue ? new BudgetLineId(v.Value) : null
+                );
 
             entity.Property(r => r.Purpose)
                 .IsRequired()
@@ -256,6 +258,26 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         });
         builder.UseSnakeCaseNamingConvention();
         
+        // SupplierOffer mapping
+        builder.Entity<SupplierOffer>(entity =>
+        {
+            entity.HasKey(o => o.Id);
+            entity.Property(o => o.Id).IsRequired().ValueGeneratedOnAdd();
+
+            entity.Property(o => o.SupplierId)
+                .HasConversion(s => s.Value, v => new SupplierId(v))
+                .IsRequired();
+
+            entity.Property(o => o.MaterialCatalogId)
+                .HasConversion(m => m.Value, v => new MaterialCatalogId(v))
+                .IsRequired();
+
+            entity.Property(o => o.UnitPrice)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            entity.HasIndex(o => new { o.SupplierId, o.MaterialCatalogId }).IsUnique();
+        });
         // TEAM USERS ---
         
         builder.Entity<TeamUser>().ToTable("team_user");

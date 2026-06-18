@@ -41,8 +41,7 @@ public record CreateSupplierResource(
     [SwaggerParameter(Description = "The supplier's email address")] 
     string Email,
     
-    [Required]
     [StringLength(500)]
     [SwaggerParameter(Description = "The payment terms agreed with the supplier")] 
-    string PaymentTerms)
+    string? PaymentTerms)
     ;
