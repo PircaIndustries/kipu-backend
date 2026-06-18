@@ -17,7 +17,7 @@ public class ProjectCommandService(
     {
         if (await projectRepository.ExistsByNameAsync(command.Name))
         {
-            return new Result<Project, string>.Failure($"A project with name '{command.Name}' already exists.");
+            return new Result<Project, string>.Failure("ProjectNameAlreadyExists");
         }
 
         var project = new Project(
@@ -43,7 +43,7 @@ public class ProjectCommandService(
         }
         catch (Exception ex)
         {
-            return new Result<Project, string>.Failure($"An error occurred while creating the project: {ex.Message}");
+            return new Result<Project, string>.Failure(ex.Message);
         }
     }
 
@@ -52,17 +52,17 @@ public class ProjectCommandService(
         var project = await projectRepository.FindByIdAsync(command.ProjectId);
         if (project == null)
         {
-            return new Result<Project, string>.Failure($"Project with ID {command.ProjectId} not found.");
+            return new Result<Project, string>.Failure("ProjectNotFound");
         }
 
         if (string.IsNullOrWhiteSpace(command.Justification))
         {
-            return new Result<Project, string>.Failure("A justification is required for changing the project status.");
+            return new Result<Project, string>.Failure("JustificationRequired");
         }
 
         if (!ProjectStatus.IsValid(command.Status))
         {
-            return new Result<Project, string>.Failure($"Invalid status '{command.Status}'. Valid statuses are: {string.Join(", ", ProjectStatus.All)}.");
+            return new Result<Project, string>.Failure("InvalidProjectStatus");
         }
 
         project.Status = command.Status;
@@ -76,7 +76,7 @@ public class ProjectCommandService(
         }
         catch (Exception ex)
         {
-            return new Result<Project, string>.Failure($"An error occurred while updating the project status: {ex.Message}");
+            return new Result<Project, string>.Failure(ex.Message);
         }
     }
 
@@ -85,7 +85,7 @@ public class ProjectCommandService(
         var project = await projectRepository.FindByIdAsync(command.ProjectId);
         if (project == null)
         {
-            return new Result<IEnumerable<ProjectItem>, string>.Failure($"Project with ID {command.ProjectId} not found.");
+            return new Result<IEnumerable<ProjectItem>, string>.Failure("ProjectNotFound");
         }
 
         // Validate items dates
@@ -93,7 +93,7 @@ public class ProjectCommandService(
         {
             if (item.EndDate < item.StartDate)
             {
-                return new Result<IEnumerable<ProjectItem>, string>.Failure($"For item '{item.Name}', the end date ({item.EndDate:yyyy-MM-dd}) cannot be earlier than the start date ({item.StartDate:yyyy-MM-dd}).");
+                return new Result<IEnumerable<ProjectItem>, string>.Failure("InvalidItemDates");
             }
         }
 
@@ -112,7 +112,7 @@ public class ProjectCommandService(
         }
         catch (Exception ex)
         {
-            return new Result<IEnumerable<ProjectItem>, string>.Failure($"An error occurred while adding project items: {ex.Message}");
+            return new Result<IEnumerable<ProjectItem>, string>.Failure(ex.Message);
         }
     }
 }

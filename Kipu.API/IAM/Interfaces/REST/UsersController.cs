@@ -2,7 +2,9 @@ using Kipu.API.IAM.Application.Services;
 using Kipu.API.IAM.Domain.Model.Queries;
 using Kipu.API.IAM.Interfaces.REST.Resources;
 using Kipu.API.IAM.Interfaces.REST.Transform;
+using Kipu.API.Resources;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace Kipu.API.IAM.Interfaces.REST;
 
@@ -10,7 +12,8 @@ namespace Kipu.API.IAM.Interfaces.REST;
 [Route("api/v1/[controller]")]
 public class UsersController(
     IUserCommandService userCommandService,
-    IUserQueryService userQueryService) : ControllerBase
+    IUserQueryService userQueryService,
+    IStringLocalizer<SharedResource> localizer) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] SignUpResource resource)
@@ -20,7 +23,7 @@ public class UsersController(
 
         return result.Fold<IActionResult>(
             user => CreatedAtAction(nameof(GetUserById), new { id = user.Id }, UserResourceFromEntityAssembler.ToResourceFromEntity(user)),
-            error => BadRequest(new { message = error })
+            error => BadRequest(new { message = localizer[error].Value })
         );
     }
 
@@ -32,7 +35,7 @@ public class UsersController(
 
         if (user == null)
         {
-            return NotFound(new { message = $"User with ID {id} not found." });
+            return NotFound(new { message = string.Format(localizer["UserNotFoundWithId"].Value, id) });
         }
 
         var resource = UserResourceFromEntityAssembler.ToResourceFromEntity(user);
@@ -47,7 +50,7 @@ public class UsersController(
 
         return result.Fold<IActionResult>(
             user => Ok(UserResourceFromEntityAssembler.ToResourceFromEntity(user)),
-            error => BadRequest(new { message = error })
+            error => BadRequest(new { message = localizer[error].Value })
         );
     }
 }

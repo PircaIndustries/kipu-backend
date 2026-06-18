@@ -135,4 +135,40 @@
     <data name="InvalidSupplierOfferRequest" xml:space="preserve">
         <value>Los datos de la oferta de proveedor son inválidos.</value>
     </data>
+    <data name="EmailAlreadyRegistered" xml:space="preserve">
+        <value>El correo electrónico ya está registrado.</value>
+    </data>
+    <data name="InvalidRole" xml:space="preserve">
+        <value>Rol inválido. Los roles válidos son: Administrador, Gestor Operativo, Logística y Administración, Cliente, Ingeniero.</value>
+    </data>
+    <data name="InvalidCredentials" xml:space="preserve">
+        <value>Correo electrónico o contraseña inválidos.</value>
+    </data>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>Usuario no encontrado.</value>
+    </data>
+    <data name="RoleRequired" xml:space="preserve">
+        <value>Se debe proporcionar al menos un rol.</value>
+    </data>
+    <data name="UserNotFoundWithId" xml:space="preserve">
+        <value>Usuario con ID {0} no encontrado.</value>
+    </data>
+    <data name="ProjectNameAlreadyExists" xml:space="preserve">
+        <value>Ya existe un proyecto con ese nombre.</value>
+    </data>
+    <data name="ProjectNotFound" xml:space="preserve">
+        <value>Proyecto no encontrado.</value>
+    </data>
+    <data name="JustificationRequired" xml:space="preserve">
+        <value>Se requiere una justificación para cambiar el estado del proyecto.</value>
+    </data>
+    <data name="InvalidProjectStatus" xml:space="preserve">
+        <value>Estado de proyecto inválido.</value>
+    </data>
+    <data name="InvalidItemDates" xml:space="preserve">
+        <value>La fecha de fin no puede ser anterior a la fecha de inicio.</value>
+    </data>
+    <data name="ProjectNotFoundWithId" xml:space="preserve">
+        <value>Proyecto con ID {0} no encontrado.</value>
+    </data>
 </root>

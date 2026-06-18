@@ -135,4 +135,40 @@
     <data name="InvalidSupplierOfferRequest" xml:space="preserve">
         <value>The provided supplier offer data is invalid.</value>
     </data>
+    <data name="EmailAlreadyRegistered" xml:space="preserve">
+        <value>Email is already registered.</value>
+    </data>
+    <data name="InvalidRole" xml:space="preserve">
+        <value>Invalid role. Valid roles are: Administrador, Gestor Operativo, Logística y Administración, Cliente, Ingeniero.</value>
+    </data>
+    <data name="InvalidCredentials" xml:space="preserve">
+        <value>Invalid email or password.</value>
+    </data>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>User not found.</value>
+    </data>
+    <data name="RoleRequired" xml:space="preserve">
+        <value>At least one role must be provided.</value>
+    </data>
+    <data name="UserNotFoundWithId" xml:space="preserve">
+        <value>User with ID {0} not found.</value>
+    </data>
+    <data name="ProjectNameAlreadyExists" xml:space="preserve">
+        <value>A project with this name already exists.</value>
+    </data>
+    <data name="ProjectNotFound" xml:space="preserve">
+        <value>Project not found.</value>
+    </data>
+    <data name="JustificationRequired" xml:space="preserve">
+        <value>A justification is required for changing the project status.</value>
+    </data>
+    <data name="InvalidProjectStatus" xml:space="preserve">
+        <value>Invalid project status.</value>
+    </data>
+    <data name="InvalidItemDates" xml:space="preserve">
+        <value>The end date cannot be earlier than the start date.</value>
+    </data>
+    <data name="ProjectNotFoundWithId" xml:space="preserve">
+        <value>Project with ID {0} not found.</value>
+    </data>
 </root>
