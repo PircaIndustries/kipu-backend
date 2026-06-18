@@ -177,6 +177,16 @@ builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IDocumentCommandService, DocumentCommandService>();
 builder.Services.AddScoped<IDocumentQueryService, DocumentQueryService>();
 
+// Budget Bounded Context Dependencies Injections
+builder.Services.AddScoped<Kipu.API.Budget.Domain.Repositories.IBudgetItemRepository, Kipu.API.Budget.Infraestructure.BudgetItemRepository>();
+builder.Services.AddScoped<Kipu.API.Budget.Application.Services.IBudgetCommandService, Kipu.API.Budget.Application.Internal.CommandServices.BudgetCommandService>();
+builder.Services.AddScoped<Kipu.API.Budget.Application.Services.IBudgetQueryService, Kipu.API.Budget.Application.Internal.QueryServices.BudgetQueryService>();
+
+// Progress Bounded Context Dependencies Injections
+builder.Services.AddScoped<Kipu.API.Progress.Domain.Repositories.IProgressItemRepository, Kipu.API.Progress.Infrastructure.ProgressItemRepository>();
+builder.Services.AddScoped<Kipu.API.Progress.Application.Services.IProgressCommandService, Kipu.API.Progress.Application.Internal.CommandServices.ProgressCommandService>();
+builder.Services.AddScoped<Kipu.API.Progress.Application.Services.IProgressQueryService, Kipu.API.Progress.Application.Internal.QueryServices.ProgressQueryService>();
+
 var app = builder.Build();
 
 // Verify Database Objects are created
@@ -185,6 +195,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
     context.Database.Migrate();
+    context.Database.EnsureCreated();
 }
 
 // Configure the HTTP request pipeline.
