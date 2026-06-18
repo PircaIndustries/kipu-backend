@@ -3,7 +3,9 @@ using Kipu.API.Projects.Domain.Model.Commands;
 using Kipu.API.Projects.Domain.Model.Queries;
 using Kipu.API.Projects.Interfaces.REST.Resources;
 using Kipu.API.Projects.Interfaces.REST.Transform;
+using Kipu.API.Resources;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace Kipu.API.Projects.Interfaces.REST;
 
@@ -11,7 +13,8 @@ namespace Kipu.API.Projects.Interfaces.REST;
 [Route("api/v1/[controller]")]
 public class ProjectsController(
     IProjectCommandService projectCommandService,
-    IProjectQueryService projectQueryService) : ControllerBase
+    IProjectQueryService projectQueryService,
+    IStringLocalizer<SharedResource> localizer) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> CreateProject([FromBody] CreateProjectResource resource)
@@ -21,7 +24,7 @@ public class ProjectsController(
 
         return result.Fold<IActionResult>(
             project => CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, ProjectResourceFromEntityAssembler.ToResourceFromEntity(project)),
-            error => BadRequest(new { message = error })
+            error => BadRequest(new { message = localizer[error].Value })
         );
     }
 
@@ -42,7 +45,7 @@ public class ProjectsController(
 
         if (project == null)
         {
-            return NotFound(new { message = $"Project with ID {id} not found." });
+            return NotFound(new { message = string.Format(localizer["ProjectNotFoundWithId"].Value, id) });
         }
 
         return Ok(ProjectResourceFromEntityAssembler.ToResourceFromEntity(project));
@@ -56,7 +59,7 @@ public class ProjectsController(
 
         return result.Fold<IActionResult>(
             project => Ok(ProjectResourceFromEntityAssembler.ToResourceFromEntity(project)),
-            error => BadRequest(new { message = error })
+            error => BadRequest(new { message = localizer[error].Value })
         );
     }
 
@@ -73,7 +76,7 @@ public class ProjectsController(
                 var itemResources = items.Select(ProjectItemResourceFromEntityAssembler.ToResourceFromEntity);
                 return StatusCode(201, itemResources);
             },
-            error => BadRequest(new { message = error })
+            error => BadRequest(new { message = localizer[error].Value })
         );
     }
 
