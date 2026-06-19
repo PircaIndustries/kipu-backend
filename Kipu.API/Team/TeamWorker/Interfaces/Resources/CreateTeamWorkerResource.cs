@@ -13,10 +13,6 @@ public record CreateTeamWorkerResource(
     string FullName, 
 
     [Required]
-    [MaxLength(150)]
-    string LastName, 
-
-    [Required]
     [MaxLength(50)]
     string Role, 
 
