@@ -42,7 +42,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddLocalization();
 
 // Add services to the container.
 
@@ -54,11 +54,31 @@ builder.Services.AddProblemDetails(options =>
 {
     options.CustomizeProblemDetails = context =>
     {
+        var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+        var isSpanish = currentCulture.StartsWith("es", StringComparison.OrdinalIgnoreCase);
+
+        if (isSpanish)
+        {
+            // Translate framework generic Title and Detail fields (like 404, 405, 415, etc.)
+            ValidationErrorsTranslator.TranslateProblemDetails(context.ProblemDetails);
+        }
+
         if (context.ProblemDetails.Status is null or >= 500)
         {
             var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<SharedResource>>();
             context.ProblemDetails.Title ??= localizer["UnexpectedServerError"].Value;
             context.ProblemDetails.Detail ??= localizer["UnexpectedErrorProcessingRequest"].Value;
+        }
+        else if (context.ProblemDetails.Status == 400 && isSpanish)
+        {
+            if (context.ProblemDetails is Microsoft.AspNetCore.Http.HttpValidationProblemDetails httpValidationProblem)
+            {
+                ValidationErrorsTranslator.TranslateValidationErrors(httpValidationProblem.Errors);
+            }
+            else if (context.ProblemDetails is Microsoft.AspNetCore.Mvc.ValidationProblemDetails validationProblem)
+            {
+                ValidationErrorsTranslator.TranslateValidationErrors(validationProblem.Errors);
+            }
         }
     };
 });
@@ -69,6 +89,7 @@ builder.Services.AddSwaggerGen(
     c =>
     {
         c.EnableAnnotations();
+        c.OperationFilter<AcceptLanguageHeaderParameterOperationFilter>();
         c.SwaggerDoc("v1",
             new OpenApiInfo
             {
