@@ -3,7 +3,9 @@ using Kipu.API.Document.Domain.Model.Commands;
 using Kipu.API.Document.Domain.Model.Queries;
 using Kipu.API.Document.Interfaces.REST.Resources;
 using Kipu.API.Document.Interfaces.REST.Transform;
+using Kipu.API.Resources;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace Kipu.API.Document.Interfaces.REST;
 
@@ -13,13 +15,16 @@ public class DocumentsController : ControllerBase
 {
     private readonly IDocumentCommandService _documentCommandService;
     private readonly IDocumentQueryService _documentQueryService;
+    private readonly IStringLocalizer<SharedResource> _localizer;
 
     public DocumentsController(
         IDocumentCommandService documentCommandService, 
-        IDocumentQueryService documentQueryService)
+        IDocumentQueryService documentQueryService,
+        IStringLocalizer<SharedResource> localizer)
     {
         _documentCommandService = documentCommandService;
         _documentQueryService = documentQueryService;
+        _localizer = localizer;
     }
     
     [HttpPost]
@@ -28,7 +33,8 @@ public class DocumentsController : ControllerBase
         var command = CreateDocumentCommandFromResourceAssembler.ToCommandFromResource(resource);
         var result = await _documentCommandService.Handle(command);
         
-        if (result is null) return BadRequest("The document could not be created");
+        if (result is null)
+            return BadRequest(new { message = _localizer["DocumentNotCreated"].Value });
         
         var responseResource = DocumentResourceFromEntityAssembler.ToResourceFromEntity(result);
         return CreatedAtAction(nameof(GetDocumentById), new { documentId = result.Id.Value }, responseResource);
@@ -40,7 +46,8 @@ public class DocumentsController : ControllerBase
         var command = new SignDocumentAsParticipantCommand(documentId, request.TeamUserId);
         var result = await _documentCommandService.Handle(command);
 
-        if (result is null) return BadRequest("An error has happened while signing the document.");
+        if (result is null)
+            return BadRequest(new { message = _localizer["DocumentSignFailed"].Value });
 
         var resource = DocumentResourceFromEntityAssembler.ToResourceFromEntity(result);
         return Ok(resource);
@@ -52,7 +59,8 @@ public class DocumentsController : ControllerBase
         var query = new GetDocumentByIdQuery(documentId);
         var result = await _documentQueryService.Handle(query);
 
-        if (result is null) return NotFound();
+        if (result is null)
+            return NotFound(new { message = _localizer["DocumentNotFound"].Value });
 
         var resource = DocumentResourceFromEntityAssembler.ToResourceFromEntity(result);
         return Ok(resource);

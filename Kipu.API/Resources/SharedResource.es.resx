@@ -171,4 +171,46 @@
     <data name="ProjectNotFoundWithId" xml:space="preserve">
         <value>Proyecto con ID {0} no encontrado.</value>
     </data>
+    <data name="TeamUserNotFound" xml:space="preserve">
+        <value>Usuario del equipo no encontrado.</value>
+    </data>
+    <data name="TeamUserDuplicated" xml:space="preserve">
+        <value>Ya existe un usuario del equipo con este correo en el proyecto.</value>
+    </data>
+    <data name="TeamUserNotCreated" xml:space="preserve">
+        <value>No se pudo crear el usuario del equipo.</value>
+    </data>
+    <data name="TeamUserNotActivated" xml:space="preserve">
+        <value>No se pudo activar el usuario del equipo.</value>
+    </data>
+    <data name="TeamUserNotDeactivated" xml:space="preserve">
+        <value>No se pudo desactivar el usuario del equipo.</value>
+    </data>
+    <data name="TeamWorkerNotFound" xml:space="preserve">
+        <value>Trabajador del equipo no encontrado.</value>
+    </data>
+    <data name="TeamWorkerNotCreated" xml:space="preserve">
+        <value>No se pudo crear el trabajador del equipo.</value>
+    </data>
+    <data name="TeamWorkerNotDeleted" xml:space="preserve">
+        <value>No se pudo eliminar el trabajador del equipo.</value>
+    </data>
+    <data name="MachineryAssignmentFailed" xml:space="preserve">
+        <value>Ocurrió un error al asignar la maquinaria.</value>
+    </data>
+    <data name="MachineryRemovalFailed" xml:space="preserve">
+        <value>Ocurrió un error al remover la maquinaria.</value>
+    </data>
+    <data name="DocumentNotFound" xml:space="preserve">
+        <value>Documento no encontrado.</value>
+    </data>
+    <data name="DocumentNotCreated" xml:space="preserve">
+        <value>No se pudo crear el documento.</value>
+    </data>
+    <data name="DocumentSignFailed" xml:space="preserve">
+        <value>Ocurrió un error al firmar el documento.</value>
+    </data>
+    <data name="UserNotDocumentParticipant" xml:space="preserve">
+        <value>El usuario no es participante de este documento.</value>
+    </data>
 </root>

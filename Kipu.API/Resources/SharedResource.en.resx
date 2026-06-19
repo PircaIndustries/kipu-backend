@@ -171,4 +171,46 @@
     <data name="ProjectNotFoundWithId" xml:space="preserve">
         <value>Project with ID {0} not found.</value>
     </data>
+    <data name="TeamUserNotFound" xml:space="preserve">
+        <value>Team user not found.</value>
+    </data>
+    <data name="TeamUserDuplicated" xml:space="preserve">
+        <value>A team user with this email already exists in the project.</value>
+    </data>
+    <data name="TeamUserNotCreated" xml:space="preserve">
+        <value>The team user could not be created.</value>
+    </data>
+    <data name="TeamUserNotActivated" xml:space="preserve">
+        <value>The team user could not be activated.</value>
+    </data>
+    <data name="TeamUserNotDeactivated" xml:space="preserve">
+        <value>The team user could not be deactivated.</value>
+    </data>
+    <data name="TeamWorkerNotFound" xml:space="preserve">
+        <value>Team worker not found.</value>
+    </data>
+    <data name="TeamWorkerNotCreated" xml:space="preserve">
+        <value>The team worker could not be created.</value>
+    </data>
+    <data name="TeamWorkerNotDeleted" xml:space="preserve">
+        <value>The team worker could not be deleted.</value>
+    </data>
+    <data name="MachineryAssignmentFailed" xml:space="preserve">
+        <value>An error occurred while assigning the machinery.</value>
+    </data>
+    <data name="MachineryRemovalFailed" xml:space="preserve">
+        <value>An error occurred while removing the machinery.</value>
+    </data>
+    <data name="DocumentNotFound" xml:space="preserve">
+        <value>Document not found.</value>
+    </data>
+    <data name="DocumentNotCreated" xml:space="preserve">
+        <value>The document could not be created.</value>
+    </data>
+    <data name="DocumentSignFailed" xml:space="preserve">
+        <value>An error occurred while signing the document.</value>
+    </data>
+    <data name="UserNotDocumentParticipant" xml:space="preserve">
+        <value>The user is not a participant of this document.</value>
+    </data>
 </root>

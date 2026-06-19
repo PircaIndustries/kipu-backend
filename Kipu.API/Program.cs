@@ -111,10 +111,11 @@ builder.Services.AddSwaggerGen(
     });
 
 // Add CORS Policy
+var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? ["http://localhost:5173"];
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllPolicy",
-        policy => policy.AllowAnyOrigin()
+    options.AddPolicy("KipuCorsPolicy",
+        policy => policy.WithOrigins(allowedOrigins)
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
@@ -225,7 +226,7 @@ app.UseExceptionHandler();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors("AllowAllPolicy");
+app.UseCors("KipuCorsPolicy");
 
 // Localization Configuration
 string[] supportedCultures = ["en", "es"];
