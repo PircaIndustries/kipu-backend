@@ -89,4 +89,16 @@ public class ProjectsController(
         var resources = items.Select(ProjectItemResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(resources);
     }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteProject(int id)
+    {
+        var command = new DeleteProjectCommand(id);
+        var result = await projectCommandService.Handle(command);
+
+        return result.Fold<IActionResult>(
+            project => Ok(new { message = "Project deleted successfully" }),
+            error => BadRequest(new { message = localizer[error].Value })
+        );
+    }
 }
