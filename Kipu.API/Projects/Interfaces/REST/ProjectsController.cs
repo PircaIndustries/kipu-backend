@@ -51,6 +51,7 @@ public class ProjectsController(
         return Ok(ProjectResourceFromEntityAssembler.ToResourceFromEntity(project));
     }
 
+    [HttpPatch("{id:int}")]
     [HttpPatch("{id:int}/status")]
     public async Task<IActionResult> UpdateProjectStatus(int id, [FromBody] UpdateProjectStatusResource resource)
     {

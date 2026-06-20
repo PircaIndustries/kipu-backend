@@ -16,6 +16,7 @@ public class UsersController(
     IStringLocalizer<SharedResource> localizer) : ControllerBase
 {
     [HttpPost]
+    [HttpPost("~/api/v1/identities")]
     public async Task<IActionResult> CreateUser([FromBody] SignUpResource resource)
     {
         var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(resource);
