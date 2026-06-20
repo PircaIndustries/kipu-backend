@@ -28,6 +28,22 @@ public class UsersController(
         );
     }
 
+    [HttpGet]
+    [HttpGet("~/api/v1/identities")]
+    public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
+    {
+        var query = new GetUserByEmailQuery(email);
+        var user = await userQueryService.Handle(query);
+
+        if (user == null)
+        {
+            return Ok(new List<object>());
+        }
+
+        var resource = UserResourceFromEntityAssembler.ToResourceFromEntity(user);
+        return Ok(new List<object> { resource });
+    }
+
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetUserById(int id)
     {

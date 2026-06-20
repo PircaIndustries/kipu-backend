@@ -115,4 +115,24 @@ public class ProjectCommandService(
             return new Result<IEnumerable<ProjectItem>, string>.Failure(ex.Message);
         }
     }
+
+    public async Task<Result<Project, string>> Handle(DeleteProjectCommand command)
+    {
+        var project = await projectRepository.FindByIdAsync(command.ProjectId);
+        if (project == null)
+        {
+            return new Result<Project, string>.Failure("ProjectNotFound");
+        }
+
+        try
+        {
+            projectRepository.Remove(project);
+            await unitOfWork.CompleteAsync();
+            return new Result<Project, string>.Success(project);
+        }
+        catch (Exception ex)
+        {
+            return new Result<Project, string>.Failure(ex.Message);
+        }
+    }
 }
