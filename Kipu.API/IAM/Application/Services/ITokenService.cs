@@ -4,5 +4,5 @@ namespace Kipu.API.IAM.Application.Services;
 
 public interface ITokenService
 {
-    string GenerateToken(User user);
+    string GenerateToken(User user, bool rememberMe = false);
 }

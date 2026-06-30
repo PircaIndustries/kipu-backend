@@ -41,6 +41,7 @@ using Microsoft.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddMemoryCache();
 
 builder.Services.AddLocalization();
 
@@ -148,6 +149,8 @@ builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
 builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<Kipu.API.IAM.Application.Services.IOtpService, Kipu.API.IAM.Infrastructure.Services.OtpService>();
+builder.Services.AddScoped<Kipu.API.Shared.Domain.Services.IEmailService, Kipu.API.Shared.Infrastructure.Services.EmailService>();
 
 // Projects Bounded Context Dependency Injections
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
