@@ -37,6 +37,11 @@ using Kipu.API.Team.TeamWorker.Infraestructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.OpenApi;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,8 +52,36 @@ builder.Services.AddLocalization();
 
 // Add services to the container.
 
-builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()))
+builder.Services.AddControllers(options => 
+    {
+        options.Conventions.Add(new KebabCaseRouteNamingConvention());
+        var policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+        options.Filters.Add(new AuthorizeFilter(policy));
+    })
     .AddDataAnnotationsLocalization();
+    
+var secret = builder.Configuration["AppSettings:Secret"] ?? throw new InvalidOperationException("Secret not found in appsettings.");
+var key = Encoding.ASCII.GetBytes(secret);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; 
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
 
 // Register RFC 7807 ProblemDetails payloads for centralized exception handling.
 builder.Services.AddProblemDetails(options =>
@@ -91,6 +124,18 @@ builder.Services.AddSwaggerGen(
     {
         c.EnableAnnotations();
         c.OperationFilter<AcceptLanguageHeaderParameterOperationFilter>();
+        
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Scheme = "Bearer"
+        });
+        
+        c.OperationFilter<SecurityRequirementsOperationFilter>();
+
         c.SwaggerDoc("v1",
             new OpenApiInfo
             {
@@ -243,6 +288,9 @@ app.UseRequestLocalization(localizationOptions);
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
