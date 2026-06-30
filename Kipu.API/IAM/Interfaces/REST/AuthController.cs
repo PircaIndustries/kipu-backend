@@ -5,9 +5,12 @@ using Kipu.API.Resources;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Kipu.API.IAM.Interfaces.REST;
 
 [ApiController]
+[AllowAnonymous]
 [Route("api/v1/[controller]")]
 public class AuthController(
     IUserCommandService userCommandService,

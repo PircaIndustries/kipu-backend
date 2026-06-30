@@ -6,6 +6,8 @@ using Kipu.API.Resources;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Kipu.API.IAM.Interfaces.REST;
 
 [ApiController]
@@ -17,6 +19,7 @@ public class UsersController(
 {
     [HttpPost]
     [HttpPost("~/api/v1/identities")]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateUser([FromBody] SignUpResource resource)
     {
         var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(resource);
@@ -30,6 +33,7 @@ public class UsersController(
 
     [HttpGet]
     [HttpGet("~/api/v1/identities")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
     {
         var query = new GetUserByEmailQuery(email);
