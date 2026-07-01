@@ -28,6 +28,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Kipu.API.Progress.Domain.Model.Aggregates.ProgressItem> ProgressItems { get; set; }
     public DbSet<Kipu.API.Budget.Domain.Model.Entities.BudgetTransaction> BudgetTransactions { get; set; }
     public DbSet<SupplierOffer> SupplierOffers { get; set; }
+    public DbSet<MachineryAssignment> MachineryAssignments { get; set; }
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -278,6 +279,24 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
             entity.HasIndex(o => new { o.SupplierId, o.MaterialCatalogId }).IsUnique();
         });
+        // MACHINERY ASSIGNMENTS ---
+
+        builder.Entity<MachineryAssignment>().ToTable("machinery_assignments");
+
+        builder.Entity<MachineryAssignment>().HasKey(m => m.Id);
+        builder.Entity<MachineryAssignment>().Property(m => m.Id).HasColumnName("id").IsRequired();
+        builder.Entity<MachineryAssignment>().Property(m => m.ProjectId).HasColumnName("project_id").IsRequired();
+        builder.Entity<MachineryAssignment>().Property(m => m.MachineryId).HasColumnName("machinery_id").IsRequired();
+        builder.Entity<MachineryAssignment>().Property(m => m.Name).HasColumnName("name").IsRequired().HasMaxLength(200);
+        builder.Entity<MachineryAssignment>().Property(m => m.Status).HasColumnName("status").IsRequired().HasMaxLength(30);
+        builder.Entity<MachineryAssignment>().Property(m => m.AssignedTo).HasColumnName("assigned_to").HasMaxLength(100);
+        builder.Entity<MachineryAssignment>().Property(m => m.AssignedWorkerId).HasColumnName("assigned_worker_id").HasMaxLength(50);
+        builder.Entity<MachineryAssignment>().Property(m => m.RegistrationDate).HasColumnName("registration_date").IsRequired();
+        builder.Entity<MachineryAssignment>().Property(m => m.MaintenanceHours).HasColumnName("maintenance_hours").IsRequired().HasMaxLength(10);
+        builder.Entity<MachineryAssignment>().Property(m => m.AssignmentDetail).HasColumnName("assignment_detail").IsRequired().HasMaxLength(500);
+        builder.Entity<MachineryAssignment>().Property(m => m.CreatedAt).HasColumnName("created_at");
+        builder.Entity<MachineryAssignment>().Property(m => m.UpdatedAt).HasColumnName("updated_at");
+
         // TEAM USERS ---
         
         builder.Entity<TeamUser>().ToTable("team_user");
@@ -294,6 +313,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             e.Property(p => p.Address).HasColumnName("email"); 
         });
 
+        builder.Entity<TeamUser>().Property(t => t.UserId).HasColumnName("user_id");
         builder.Entity<TeamUser>().Property(t => t.FullName).HasColumnName("full_name");
         builder.Entity<TeamUser>().Property(t => t.Role).HasColumnName("role");
         builder.Entity<TeamUser>().Property(t => t.ProjectId).HasColumnName("project_id");

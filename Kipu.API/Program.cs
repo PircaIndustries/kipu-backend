@@ -229,7 +229,13 @@ builder.Services.AddScoped<ISupplierOfferRepository, SupplierOfferRepository>();
 builder.Services.AddScoped<ISupplierOfferCommandService, SupplierOfferCommandService>();
 builder.Services.AddScoped<ISupplierOfferQueryService, SupplierOfferQueryService>();
 
-// Team UsersBounded Context Dependency Injections 
+// Machinery Assignments Bounded Context Dependency Injections
+
+builder.Services.AddScoped<IMachineryAssignmentRepository, MachineryAssignmentRepository>();
+builder.Services.AddScoped<IMachineryAssignmentCommandService, MachineryAssignmentCommandService>();
+builder.Services.AddScoped<IMachineryAssignmentQueryService, MachineryAssignmentQueryService>();
+
+// Team Users Bounded Context Dependency Injections 
 
 builder.Services.AddScoped<ITeamUserRepository, TeamUserRepository>();
 builder.Services.AddScoped<ITeamUserCommandService, TeamUserCommandService>();

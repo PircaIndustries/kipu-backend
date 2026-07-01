@@ -19,8 +19,8 @@ public class TeamUserCommandService : ITeamUserCommandService
 
     public async Task<domain.model.Aggregates.TeamUser?> Handle(CreateTeamUserCommand command)
     {
-        var teamUser =
-            new domain.model.Aggregates.TeamUser(command.FullName, new Email(command.Email), command.Role, command.ProjectId);
+        var teamUser = new domain.model.Aggregates.TeamUser(
+            command.UserId, command.FullName, new Email(command.Email), command.Role, command.ProjectId);
 
         try
         {
@@ -34,20 +34,20 @@ public class TeamUserCommandService : ITeamUserCommandService
             return null;
         }
     }
-    
+
     public async Task<domain.model.Aggregates.TeamUser?> Handle(ActivateTeamUserCommand command)
     {
         var userId = new UserId(command.Id);
         var teamUser = await _teamUserRepository.FindByIdAsync(userId);
 
-        if (teamUser is null) return null; // Si no existe, devolvemos null
+        if (teamUser is null) return null;
 
-        teamUser.Activate(); // Llamamos al método de tu dominio
+        teamUser.Activate();
 
         try
         {
-            _teamUserRepository.Update(teamUser); 
-            await _unitOfWork.CompleteAsync(); 
+            _teamUserRepository.Update(teamUser);
+            await _unitOfWork.CompleteAsync();
             return teamUser;
         }
         catch (Exception e)
@@ -62,9 +62,9 @@ public class TeamUserCommandService : ITeamUserCommandService
         var userId = new UserId(command.Id);
         var teamUser = await _teamUserRepository.FindByIdAsync(userId);
 
-        if (teamUser is null) return null; 
+        if (teamUser is null) return null;
 
-        teamUser.Deactivate(); 
+        teamUser.Deactivate();
 
         try
         {

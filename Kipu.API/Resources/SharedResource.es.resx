@@ -195,6 +195,21 @@
     <data name="TeamWorkerNotDeleted" xml:space="preserve">
         <value>No se pudo eliminar el trabajador del equipo.</value>
     </data>
+    <data name="MachineryAssignmentNotFound" xml:space="preserve">
+        <value>La asignación de maquinaria no fue encontrada.</value>
+    </data>
+    <data name="InvalidMachineryAssignmentRequest" xml:space="preserve">
+        <value>Los datos proporcionados para la asignación de maquinaria son inválidos. Por favor, verifique la información.</value>
+    </data>
+    <data name="UnexpectedErrorCreatingMachineryAssignment" xml:space="preserve">
+        <value>Ocurrió un error inesperado al crear la asignación de maquinaria.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMachineryAssignment" xml:space="preserve">
+        <value>Ocurrió un error inesperado al actualizar la asignación de maquinaria.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMachineryAssignment" xml:space="preserve">
+        <value>Ocurrió un error inesperado al eliminar la asignación de maquinaria.</value>
+    </data>
     <data name="MachineryAssignmentFailed" xml:space="preserve">
         <value>Ocurrió un error al asignar la maquinaria.</value>
     </data>

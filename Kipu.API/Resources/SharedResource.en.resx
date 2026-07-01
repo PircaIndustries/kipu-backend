@@ -195,6 +195,21 @@
     <data name="TeamWorkerNotDeleted" xml:space="preserve">
         <value>The team worker could not be deleted.</value>
     </data>
+    <data name="MachineryAssignmentNotFound" xml:space="preserve">
+        <value>The machinery assignment was not found.</value>
+    </data>
+    <data name="InvalidMachineryAssignmentRequest" xml:space="preserve">
+        <value>The provided machinery assignment data is invalid. Please check your inputs.</value>
+    </data>
+    <data name="UnexpectedErrorCreatingMachineryAssignment" xml:space="preserve">
+        <value>An unexpected error occurred while creating the machinery assignment.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMachineryAssignment" xml:space="preserve">
+        <value>An unexpected error occurred while updating the machinery assignment.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMachineryAssignment" xml:space="preserve">
+        <value>An unexpected error occurred while deleting the machinery assignment.</value>
+    </data>
     <data name="MachineryAssignmentFailed" xml:space="preserve">
         <value>An error occurred while assigning the machinery.</value>
     </data>

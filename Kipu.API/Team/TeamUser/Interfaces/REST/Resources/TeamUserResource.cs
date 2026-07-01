@@ -1,3 +1,14 @@
+using Swashbuckle.AspNetCore.Annotations;
+
 namespace Kipu.API.Team.TeamUser.Interfaces.REST.Resources;
 
-public record TeamUserResource(string Id, string FullName, string Email, string Role, bool IsActive, string ProjectId);
+[SwaggerSchema(Description = "A team user resource")]
+public record TeamUserResource(
+    string Id,
+    int? UserId,
+    string FullName,
+    string Email,
+    string Role,
+    bool IsActive,
+    string ProjectId
+);

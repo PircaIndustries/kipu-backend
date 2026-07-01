@@ -1,21 +1,12 @@
-using System.ComponentModel.DataAnnotations;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Kipu.API.Team.TeamUser.Interfaces.REST.Resources;
 
+[SwaggerSchema(Description = "Payload to create a new team user")]
 public record CreateTeamUserResource(
-    [Required]
-    [MaxLength(150)]
-    string FullName, 
-
-    [Required]
-    [EmailAddress]
-    [MaxLength(100)]
-    string Email, 
-
-    [Required]
-    [MaxLength(50)]
-    string Role, 
-
-    [Required]
-    string ProjectId
+    [Required] int UserId,
+    [Required] string FullName,
+    [Required] string Email,
+    [Required] string Role,
+    [Required] string ProjectId
 );
