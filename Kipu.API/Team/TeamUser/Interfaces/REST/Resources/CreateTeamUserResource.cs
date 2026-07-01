@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Kipu.API.Team.TeamUser.Interfaces.REST.Resources;

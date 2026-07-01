@@ -7,8 +7,10 @@ using Kipu.API.Logistics.Domain.Model.Queries;
 using Kipu.API.Logistics.Interfaces.REST.Resources.MachineryAssignment;
 using Kipu.API.Logistics.Interfaces.REST.Transform.MachineryAssignment;
 using Kipu.API.Resources;
+using Kipu.API.Shared.Application.Patterns;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Kipu.API.Logistics.Interfaces.REST;

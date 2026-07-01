@@ -5,7 +5,7 @@ namespace Kipu.API.Logistics.Interfaces.REST.Transform.MachineryAssignment;
 
 public static class MachineryAssignmentResourceFromEntityAssembler
 {
-    public static MachineryAssignmentResource ToResourceFromEntity(MachineryAssignment entity) =>
+    public static MachineryAssignmentResource ToResourceFromEntity(Domain.Model.Aggregates.MachineryAssignment entity) =>
         new(
             entity.Id,
             entity.ProjectId,

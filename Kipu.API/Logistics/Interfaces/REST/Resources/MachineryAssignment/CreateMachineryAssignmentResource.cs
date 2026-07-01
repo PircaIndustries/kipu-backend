@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Kipu.API.Logistics.Interfaces.REST.Resources.MachineryAssignment;

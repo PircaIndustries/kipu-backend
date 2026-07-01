@@ -20,7 +20,7 @@ public class TeamUserCommandService : ITeamUserCommandService
     public async Task<domain.model.Aggregates.TeamUser?> Handle(CreateTeamUserCommand command)
     {
         var teamUser = new domain.model.Aggregates.TeamUser(
-            command.UserId, command.FullName, new Email(command.Email), command.Role, command.ProjectId);
+            command.UserId, command.FullName, command.Email, command.Role, command.ProjectId);
 
         try
         {
