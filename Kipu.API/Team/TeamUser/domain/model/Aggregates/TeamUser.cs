@@ -25,7 +25,7 @@ public partial class TeamUser
         UserId = userId;
         FullName = fullName;
         Email = email;
-        IsActive = true;
+        IsActive = false;
         Role = role;
         ProjectId = projectId;
     }
@@ -36,7 +36,7 @@ public partial class TeamUser
         UserId = userId;
         FullName = fullName;
         Email = email;
-        IsActive = true;
+        IsActive = false;
         Role = role;
         ProjectId = projectId;
     }

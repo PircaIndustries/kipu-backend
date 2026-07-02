@@ -6,19 +6,19 @@ using Kipu.API.Projects.Domain.Repositories;
 using Kipu.API.Shared.Application.Patterns;
 using Kipu.API.Shared.Domain.Repositories;
 
+using Kipu.API.Team.TeamUser.domain.Repositories;
+
 namespace Kipu.API.Projects.Application.Internal.CommandServices;
 
 public class ProjectCommandService(
     IProjectRepository projectRepository,
     IProjectItemRepository projectItemRepository,
+    ITeamUserRepository teamUserRepository,
     IUnitOfWork unitOfWork) : IProjectCommandService
 {
     public async Task<Result<Project, string>> Handle(CreateProjectCommand command)
     {
-        if (await projectRepository.ExistsByNameAsync(command.Name))
-        {
-            return new Result<Project, string>.Failure("ProjectNameAlreadyExists");
-        }
+        
 
         var project = new Project(
             command.Name,
@@ -39,11 +39,23 @@ public class ProjectCommandService(
         {
             await projectRepository.AddAsync(project);
             await unitOfWork.CompleteAsync();
+            
+            var adminUser = new Kipu.API.Team.TeamUser.domain.model.Aggregates.TeamUser(
+                int.Parse(command.CreatorUserId),
+                command.CreatorFullName,
+                new Kipu.API.Team.TeamUser.domain.model.ValueObjects.Email(command.CreatorEmail),
+                "Administrador",
+                project.Id.ToString()
+            );
+            adminUser.Activate();
+            await teamUserRepository.AddAsync(adminUser);
+            await unitOfWork.CompleteAsync();
+
             return new Result<Project, string>.Success(project);
         }
         catch (Exception ex)
         {
-            return new Result<Project, string>.Failure(ex.Message);
+            return new Result<Project, string>.Failure(ex.InnerException?.Message ?? ex.Message);
         }
     }
 
@@ -76,7 +88,7 @@ public class ProjectCommandService(
         }
         catch (Exception ex)
         {
-            return new Result<Project, string>.Failure(ex.Message);
+            return new Result<Project, string>.Failure(ex.InnerException?.Message ?? ex.Message);
         }
     }
 
@@ -132,7 +144,9 @@ public class ProjectCommandService(
         }
         catch (Exception ex)
         {
-            return new Result<Project, string>.Failure(ex.Message);
+            return new Result<Project, string>.Failure(ex.InnerException?.Message ?? ex.Message);
         }
     }
 }
+
+

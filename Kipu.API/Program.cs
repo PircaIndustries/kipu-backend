@@ -264,6 +264,11 @@ builder.Services.AddScoped<Kipu.API.Progress.Domain.Repositories.IProgressItemRe
 builder.Services.AddScoped<Kipu.API.Progress.Application.Services.IProgressCommandService, Kipu.API.Progress.Application.Internal.CommandServices.ProgressCommandService>();
 builder.Services.AddScoped<Kipu.API.Progress.Application.Services.IProgressQueryService, Kipu.API.Progress.Application.Internal.QueryServices.ProgressQueryService>();
 
+// Notifications Bounded Context
+builder.Services.AddScoped<Kipu.API.Notifications.Domain.Repositories.INotificationRepository, Kipu.API.Notifications.Infrastructure.Persistence.EFC.Repositories.NotificationRepository>();
+builder.Services.AddScoped<Kipu.API.Notifications.Application.Services.INotificationCommandService, Kipu.API.Notifications.Application.Internal.CommandServices.NotificationCommandService>();
+builder.Services.AddScoped<Kipu.API.Notifications.Application.Services.INotificationQueryService, Kipu.API.Notifications.Application.Internal.QueryServices.NotificationQueryService>();
+
 var app = builder.Build();
 
 // Verify Database Objects are created

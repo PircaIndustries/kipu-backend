@@ -34,8 +34,16 @@ public class UsersController(
     [HttpGet]
     [HttpGet("~/api/v1/identities")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
+    public async Task<IActionResult> GetUsers([FromQuery] string? email)
     {
+        if (string.IsNullOrEmpty(email))
+        {
+            var allUsersQuery = new GetAllUsersQuery();
+            var allUsers = await userQueryService.Handle(allUsersQuery);
+            var resources = allUsers.Select(UserResourceFromEntityAssembler.ToResourceFromEntity);
+            return Ok(resources);
+        }
+
         var query = new GetUserByEmailQuery(email);
         var user = await userQueryService.Handle(query);
 
