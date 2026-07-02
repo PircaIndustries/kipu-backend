@@ -29,9 +29,9 @@ public class ProjectsController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllProjects()
+    public async Task<IActionResult> GetAllProjects([FromQuery] string userId)
     {
-        var query = new GetAllProjectsQuery();
+        var query = new GetAllProjectsQuery(userId);
         var projects = await projectQueryService.Handle(query);
         var resources = projects.Select(ProjectResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(resources);

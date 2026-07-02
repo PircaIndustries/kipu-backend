@@ -1,3 +1,3 @@
 namespace Kipu.API.Projects.Domain.Model.Queries;
 
-public record GetAllProjectsQuery();
+public record GetAllProjectsQuery(string UserId);

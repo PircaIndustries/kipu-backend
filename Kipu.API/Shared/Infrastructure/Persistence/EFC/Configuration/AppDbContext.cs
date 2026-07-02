@@ -29,6 +29,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Kipu.API.Budget.Domain.Model.Entities.BudgetTransaction> BudgetTransactions { get; set; }
     public DbSet<SupplierOffer> SupplierOffers { get; set; }
     public DbSet<MachineryAssignment> MachineryAssignments { get; set; }
+    public DbSet<Kipu.API.Notifications.Domain.Model.Aggregates.Notification> Notifications { get; set; }
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -41,6 +42,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        // Notification mapping
+        builder.Entity<Kipu.API.Notifications.Domain.Model.Aggregates.Notification>().HasKey(n => n.Id);
+        builder.Entity<Kipu.API.Notifications.Domain.Model.Aggregates.Notification>().Property(n => n.Id).IsRequired().ValueGeneratedOnAdd();
 
         builder.Entity<User>().HasKey(u => u.Id);
         builder.Entity<User>().Property(u => u.Id).IsRequired().ValueGeneratedOnAdd();
@@ -57,7 +62,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Project>().Property(p => p.Location).IsRequired();
         builder.Entity<Project>().Property(p => p.Budget).IsRequired();
         builder.Entity<Project>().Property(p => p.Status).IsRequired();
-        builder.Entity<Project>().HasIndex(p => p.Name).IsUnique();
+        //builder.Entity<Project>().HasIndex(p => p.Name).IsUnique();
 
         // ProjectItem mapping
         builder.Entity<ProjectItem>().HasKey(pi => pi.Id);
@@ -305,8 +310,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<TeamUser>()
             .Property(t => t.Id)
             .HasColumnName("id")
-            .HasConversion(id => id.Value, value => new TeamUserId(value)) 
-            .IsRequired();
+            .HasConversion(id => id.Value, value => new TeamUserId(value)).HasMaxLength(36).IsRequired().ValueGeneratedNever();
 
         builder.Entity<TeamUser>().OwnsOne(t => t.Email, e =>
         {
@@ -444,3 +448,5 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         });
     }
 }
+
+

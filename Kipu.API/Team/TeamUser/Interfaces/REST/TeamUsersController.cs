@@ -1,4 +1,7 @@
 using System.Net.Mime;
+using System.Text.Json;
+using Kipu.API.Notifications.Application.Services;
+using Kipu.API.Notifications.Domain.Model.Commands;
 using Kipu.API.Resources;
 using Kipu.API.Team.TeamUser.application.Services;
 using Kipu.API.Team.TeamUser.domain.model.Commands;
@@ -17,31 +20,35 @@ public class TeamUsersController : ControllerBase
 {
     private readonly ITeamUserCommandService _commandService;
     private readonly ITeamUserQueryService _queryService;
+    private readonly INotificationCommandService _notificationCommandService;
     private readonly IStringLocalizer<SharedResource> _localizer;
 
     public TeamUsersController(
         ITeamUserCommandService commandService,
         ITeamUserQueryService queryService,
+        INotificationCommandService notificationCommandService,
         IStringLocalizer<SharedResource> localizer)
     {
         _commandService = commandService;
         _queryService = queryService;
+        _notificationCommandService = notificationCommandService;
         _localizer = localizer;
     }
     
     [HttpPost]
     public async Task<ActionResult> CreateTeamUser([FromBody] CreateTeamUserResource resource)
     {
-        var command = CreateTeamUserCommandFromResourceAssembler.ToCommandFromResource(resource);
+        // Serialize resource into Payload
+        var payload = JsonSerializer.Serialize(resource);
+        var message = $"Has sido invitado a unirte al proyecto con el rol de {resource.Role}";
+        var notificationCommand = new CreateNotificationCommand(resource.UserId.ToString(), message, "ProjectInvitation", resource.ProjectId, payload);
         
-        var result = await _commandService.Handle(command);
+        var notificationResult = await _notificationCommandService.Handle(notificationCommand);
         
-        if (result is null)
-            return BadRequest(new { message = _localizer["TeamUserNotCreated"].Value });
+        if (notificationResult == null)
+            return BadRequest(new { message = "No se pudo enviar la invitación." });
         
-        var userResource = TeamUserResourceFromEntityAssembler.ToResourceFromEntity(result);
-        
-        return CreatedAtAction(nameof(GetTeamUserById), new { id = userResource.Id }, userResource);
+        return Ok(new { message = "Invitación enviada exitosamente." });
     }
     
     [HttpPost("{id}/activate")]
