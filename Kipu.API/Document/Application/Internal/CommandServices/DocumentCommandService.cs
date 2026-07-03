@@ -2,7 +2,9 @@ using Kipu.API.Document.Application.Services;
 using Kipu.API.Document.Domain.Model.Commands;
 using Kipu.API.Document.Domain.Model.ValueObjects;
 using Kipu.API.Document.Domain.Repositories;
+using Kipu.API.IAM.Application.Services;
 using Kipu.API.Shared.Domain.Repositories;
+using Kipu.API.Shared.Domain.Services;
 
 namespace Kipu.API.Document.Application.Internal.CommandServices;
 
@@ -10,11 +12,19 @@ public class DocumentCommandService : IDocumentCommandService
 {
     private readonly IDocumentRepository _documentRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IOtpService _otpService;
+    private readonly IEmailService _emailService;
 
-    public DocumentCommandService(IDocumentRepository documentRepository, IUnitOfWork unitOfWork)
+    public DocumentCommandService(
+        IDocumentRepository documentRepository,
+        IUnitOfWork unitOfWork,
+        IOtpService otpService,
+        IEmailService emailService)
     {
         _documentRepository = documentRepository;
         _unitOfWork = unitOfWork;
+        _otpService = otpService;
+        _emailService = emailService;
     }
 
     public async Task<Domain.Model.Aggregates.Document?> Handle(CreateDocumentCommand command)
@@ -39,8 +49,29 @@ public class DocumentCommandService : IDocumentCommandService
         }
     }
 
+    public async Task<bool> Handle(SendSignCodeCommand command)
+    {
+        try
+        {
+            var otp = _otpService.GenerateOtp(command.Email, $"SignDocument_{command.DocumentId}");
+            await _emailService.SendEmailAsync(
+                command.Email,
+                "Código de Verificación para Firma Digital",
+                $"<p>Tu código para firmar el documento {command.DocumentId} es: <strong>{otp}</strong></p><p>Válido por 15 minutos.</p>");
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"An error happened sending sign code: {e.Message}");
+            return false;
+        }
+    }
+
     public async Task<Domain.Model.Aggregates.Document?> Handle(SignDocumentAsParticipantCommand command)
     {
+        if (!_otpService.ValidateOtp(command.Email, $"SignDocument_{command.DocumentId}", command.Code))
+            return null;
+
         var documentId = new DocumentId(command.DocumentId);
         var document = await _documentRepository.FindByIdAsync(documentId);
 

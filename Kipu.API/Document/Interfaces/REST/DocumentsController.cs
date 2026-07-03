@@ -40,14 +40,26 @@ public class DocumentsController : ControllerBase
         return CreatedAtAction(nameof(GetDocumentById), new { documentId = result.Id.Value }, responseResource);
     }
     
+    [HttpPost("{documentId}/send-code")]
+    public async Task<IActionResult> SendSignCode(string documentId, [FromBody] SendSignCodeRequest request)
+    {
+        var command = new SendSignCodeCommand(documentId, request.Email);
+        var success = await _documentCommandService.Handle(command);
+
+        if (!success)
+            return BadRequest(new { message = _localizer["DocumentSignFailed"].Value });
+
+        return Ok(new { message = "Código enviado al correo." });
+    }
+
     [HttpPost("{documentId}/sign")]
     public async Task<IActionResult> SignDocument(string documentId, [FromBody] SignDocumentRequest request)
     {
-        var command = new SignDocumentAsParticipantCommand(documentId, request.TeamUserId);
+        var command = new SignDocumentAsParticipantCommand(documentId, request.TeamUserId, request.Code, request.Email);
         var result = await _documentCommandService.Handle(command);
 
         if (result is null)
-            return BadRequest(new { message = _localizer["DocumentSignFailed"].Value });
+            return BadRequest(new { message = "Código de verificación incorrecto o expirado." });
 
         var resource = DocumentResourceFromEntityAssembler.ToResourceFromEntity(result);
         return Ok(resource);
