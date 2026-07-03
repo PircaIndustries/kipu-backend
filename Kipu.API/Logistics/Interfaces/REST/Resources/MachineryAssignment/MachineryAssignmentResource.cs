@@ -10,6 +10,7 @@ public record MachineryAssignmentResource(
     [SwaggerParameter(Description = "Machinery name/description")] string Name,
     [SwaggerParameter(Description = "Current status")] string Status,
     [SwaggerParameter(Description = "Worker assigned")] string? AssignedTo,
+    [SwaggerParameter(Description = "Worker ID assigned")] string? AssignedWorkerId,
     [SwaggerParameter(Description = "Registration date")] string RegistrationDate,
     [SwaggerParameter(Description = "Maintenance hours")] string MaintenanceHours,
     [SwaggerParameter(Description = "Assignment detail/purpose")] string AssignmentDetail

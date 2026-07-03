@@ -3,6 +3,7 @@ using Kipu.API.IAM.Domain.Model.Aggregates;
 using Kipu.API.Projects.Domain.Model.Aggregates;
 using Kipu.API.Logistics.Domain.Model.Aggregates;
 using Kipu.API.Logistics.Domain.Model.ValueObjects;
+using Kipu.API.Logistics.MachineryCatalog.Domain.Model.Aggregates;
 using Kipu.API.Logistics.Domain.Model.ValueObjects.External;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Interceptors;
@@ -29,6 +30,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Kipu.API.Budget.Domain.Model.Entities.BudgetTransaction> BudgetTransactions { get; set; }
     public DbSet<SupplierOffer> SupplierOffers { get; set; }
     public DbSet<MachineryAssignment> MachineryAssignments { get; set; }
+    public DbSet<MachineryCatalog> MachineryCatalogs { get; set; }
     public DbSet<Kipu.API.Notifications.Domain.Model.Aggregates.Notification> Notifications { get; set; }
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -256,7 +258,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .IsRequired()
                 .HasColumnType("decimal(18,2)");
 
-            entity.HasOne<MaterialRequest>()
+            entity.HasOne(i => i.MaterialRequest)
                 .WithMany(r => r.Items)
                 .HasForeignKey(i => i.MaterialRequestId)
                 .OnDelete(DeleteBehavior.Cascade);
@@ -301,6 +303,19 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<MachineryAssignment>().Property(m => m.AssignmentDetail).HasColumnName("assignment_detail").IsRequired().HasMaxLength(500);
         builder.Entity<MachineryAssignment>().Property(m => m.CreatedAt).HasColumnName("created_at");
         builder.Entity<MachineryAssignment>().Property(m => m.UpdatedAt).HasColumnName("updated_at");
+
+        // MachineryCatalog mapping
+        builder.Entity<MachineryCatalog>().ToTable("machinery_catalog");
+        builder.Entity<MachineryCatalog>().HasKey(m => m.Id);
+        builder.Entity<MachineryCatalog>().Property(m => m.Id).HasColumnName("id").IsRequired().HasMaxLength(36);
+        builder.Entity<MachineryCatalog>().Property(m => m.Name).HasColumnName("name").IsRequired().HasMaxLength(200);
+        builder.Entity<MachineryCatalog>().Property(m => m.Brand).HasColumnName("brand").IsRequired().HasMaxLength(200);
+        builder.Entity<MachineryCatalog>().Property(m => m.Model).HasColumnName("model").IsRequired().HasMaxLength(200);
+        builder.Entity<MachineryCatalog>().Property(m => m.SerialNumber).HasColumnName("serial_number").IsRequired().HasMaxLength(100);
+        builder.Entity<MachineryCatalog>().Property(m => m.AcquisitionDate).HasColumnName("acquisition_date").HasMaxLength(20);
+        builder.Entity<MachineryCatalog>().Property(m => m.CreatedAt).HasColumnName("created_at");
+        builder.Entity<MachineryCatalog>().Property(m => m.UpdatedAt).HasColumnName("updated_at");
+        builder.Entity<MachineryCatalog>().HasIndex(m => m.SerialNumber).IsUnique();
 
         // TEAM USERS ---
         

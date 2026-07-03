@@ -14,6 +14,11 @@ using Kipu.API.Logistics.Application.Internal.QueryServices;
 using Kipu.API.Logistics.Application.Services;
 using Kipu.API.Logistics.Domain.Repositories;
 using Kipu.API.Logistics.Infrastructure.Persistence.EFC.Repositories;
+using Kipu.API.Logistics.MachineryCatalog.Application.Internal.CommandServices;
+using Kipu.API.Logistics.MachineryCatalog.Application.Internal.QueryServices;
+using Kipu.API.Logistics.MachineryCatalog.Application.Services;
+using Kipu.API.Logistics.MachineryCatalog.Domain.Repositories;
+using Kipu.API.Logistics.MachineryCatalog.Infrastructure.Persistence.EFC.Repositories;
 using Kipu.API.Projects.Application.Internal.CommandServices;
 using Kipu.API.Projects.Application.Internal.QueryServices;
 using Kipu.API.Projects.Application.Services;
@@ -236,6 +241,12 @@ builder.Services.AddScoped<IMachineryAssignmentRepository, MachineryAssignmentRe
 builder.Services.AddScoped<IMachineryAssignmentCommandService, MachineryAssignmentCommandService>();
 builder.Services.AddScoped<IMachineryAssignmentQueryService, MachineryAssignmentQueryService>();
 
+// Machinery Catalog Bounded Context Dependency Injections
+
+builder.Services.AddScoped<IMachineryCatalogRepository, MachineryCatalogRepository>();
+builder.Services.AddScoped<IMachineryCatalogCommandService, MachineryCatalogCommandService>();
+builder.Services.AddScoped<IMachineryCatalogQueryService, MachineryCatalogQueryService>();
+
 // Team Users Bounded Context Dependency Injections 
 
 builder.Services.AddScoped<ITeamUserRepository, TeamUserRepository>();
@@ -276,8 +287,10 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
-    context.Database.Migrate();
     context.Database.EnsureCreated();
+    // Migrate() is commented out because EnsureCreated() already creates all tables.
+    // When dotnet-ef is available, uncomment to apply future migrations.
+    // context.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.

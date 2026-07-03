@@ -228,4 +228,19 @@
     <data name="UserNotDocumentParticipant" xml:space="preserve">
         <value>El usuario no es participante de este documento.</value>
     </data>
+    <data name="InvalidMachineryCatalogRequest" xml:space="preserve">
+        <value>Los datos proporcionados para el catálogo de maquinaria son inválidos. Por favor, verifique la información.</value>
+    </data>
+    <data name="UnexpectedErrorCreatingMachineryCatalog" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar crear el catálogo de maquinaria.</value>
+    </data>
+    <data name="MachineryCatalogNotFound" xml:space="preserve">
+        <value>El catálogo de maquinaria no fue encontrado.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMachineryCatalog" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar actualizar el catálogo de maquinaria.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMachineryCatalog" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar eliminar el catálogo de maquinaria.</value>
+    </data>
 </root>

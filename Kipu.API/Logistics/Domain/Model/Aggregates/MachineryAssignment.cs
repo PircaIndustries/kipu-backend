@@ -34,8 +34,8 @@ public partial class MachineryAssignment
     {
         if (command.Name is not null) Name = command.Name;
         if (command.Status is not null) Status = command.Status;
-        if (command.AssignedTo is not null) AssignedTo = command.AssignedTo;
-        if (command.AssignedWorkerId is not null) AssignedWorkerId = command.AssignedWorkerId;
+        AssignedTo = command.AssignedTo;
+        AssignedWorkerId = command.AssignedWorkerId;
         if (command.MaintenanceHours is not null) MaintenanceHours = command.MaintenanceHours;
         if (command.AssignmentDetail is not null) AssignmentDetail = command.AssignmentDetail;
     }

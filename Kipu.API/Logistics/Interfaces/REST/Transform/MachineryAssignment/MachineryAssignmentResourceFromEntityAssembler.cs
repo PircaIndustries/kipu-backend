@@ -13,6 +13,7 @@ public static class MachineryAssignmentResourceFromEntityAssembler
             entity.Name,
             entity.Status,
             entity.AssignedTo,
+            entity.AssignedWorkerId,
             entity.RegistrationDate.ToString("o"),
             entity.MaintenanceHours,
             entity.AssignmentDetail
