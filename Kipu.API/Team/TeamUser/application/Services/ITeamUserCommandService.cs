@@ -7,4 +7,6 @@ public interface ITeamUserCommandService
     Task<domain.model.Aggregates.TeamUser?> Handle(CreateTeamUserCommand command);
     Task<domain.model.Aggregates.TeamUser?> Handle(ActivateTeamUserCommand command);
     Task<domain.model.Aggregates.TeamUser?> Handle(DeactivateTeamUserCommand command);
+    Task<bool> Handle(DeleteTeamUserCommand command);
+    Task<domain.model.Aggregates.TeamUser?> Handle(UpdateTeamUserRoleCommand command);
 }

@@ -9,4 +9,5 @@ public interface ITeamUserQueryService
     Task<IEnumerable<domain.model.Aggregates.TeamUser>> Handle(GetAllTeamUsersQuery query);
     Task<IEnumerable<domain.model.Aggregates.TeamUser>> Handle(GetAllTeamUsersByIsActiveQuery query);
     Task<IEnumerable<domain.model.Aggregates.TeamUser>> Handle(GetAllTeamUsersByFilterQuery query);
+    Task<IEnumerable<domain.model.Aggregates.TeamUser>> Handle(GetTeamUsersByUserIdQuery query);
 }

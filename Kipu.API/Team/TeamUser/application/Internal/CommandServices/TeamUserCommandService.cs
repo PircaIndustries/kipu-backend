@@ -78,4 +78,46 @@ public class TeamUserCommandService : ITeamUserCommandService
             return null;
         }
     }
+
+    public async Task<bool> Handle(DeleteTeamUserCommand command)
+    {
+        var userId = new UserId(command.Id);
+        var teamUser = await _teamUserRepository.FindByIdAsync(userId);
+
+        if (teamUser is null) return false;
+
+        try
+        {
+            _teamUserRepository.Remove(teamUser);
+            await _unitOfWork.CompleteAsync();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error deleting team user: {e.Message}");
+            return false;
+        }
+    }
+
+    public async Task<domain.model.Aggregates.TeamUser?> Handle(UpdateTeamUserRoleCommand command)
+    {
+        var userId = new UserId(command.Id);
+        var teamUser = await _teamUserRepository.FindByIdAsync(userId);
+
+        if (teamUser is null) return null;
+
+        teamUser.UpdateRole(command.NewRole);
+
+        try
+        {
+            _teamUserRepository.Update(teamUser);
+            await _unitOfWork.CompleteAsync();
+            return teamUser;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error updating team user role: {e.Message}");
+            return null;
+        }
+    }
 }

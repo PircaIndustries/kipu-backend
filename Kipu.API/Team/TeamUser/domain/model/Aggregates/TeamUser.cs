@@ -25,7 +25,7 @@ public partial class TeamUser
         UserId = userId;
         FullName = fullName;
         Email = email;
-        IsActive = false;
+        IsActive = true;
         Role = role;
         ProjectId = projectId;
     }
@@ -36,11 +36,12 @@ public partial class TeamUser
         UserId = userId;
         FullName = fullName;
         Email = email;
-        IsActive = false;
+        IsActive = true;
         Role = role;
         ProjectId = projectId;
     }
 
     public void Deactivate() => IsActive = false;
     public void Activate() => IsActive = true;
+    public void UpdateRole(string newRole) => Role = newRole;
 }
