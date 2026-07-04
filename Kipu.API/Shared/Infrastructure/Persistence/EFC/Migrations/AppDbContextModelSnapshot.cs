@@ -102,7 +102,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .IsUnique()
                         .HasDatabaseName("i_x_users_email");
 
-                    b.ToTable("users");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialCatalog", b =>
@@ -133,7 +133,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .IsUnique()
                         .HasDatabaseName("i_x_material_catalogs_name");
 
-                    b.ToTable("material_catalogs");
+                    b.ToTable("material_catalogs", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialCategory", b =>
@@ -171,7 +171,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .IsUnique()
                         .HasDatabaseName("i_x_material_categories_name");
 
-                    b.ToTable("material_categories");
+                    b.ToTable("material_categories", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialInventory", b =>
@@ -205,7 +205,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasKey("Id")
                         .HasName("p_k_material_inventories");
 
-                    b.ToTable("material_inventories");
+                    b.ToTable("material_inventories", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialRequest", b =>
@@ -259,7 +259,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasIndex("RequestStatus")
                         .HasDatabaseName("i_x_material_requests_request_status");
 
-                    b.ToTable("material_requests");
+                    b.ToTable("material_requests", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialRequestItem", b =>
@@ -302,7 +302,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasIndex("MaterialRequestId1")
                         .HasDatabaseName("i_x_material_request_items_material_request_id1");
 
-                    b.ToTable("material_request_items");
+                    b.ToTable("material_request_items", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.Supplier", b =>
@@ -368,7 +368,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .IsUnique()
                         .HasDatabaseName("i_x_suppliers_ruc");
 
-                    b.ToTable("suppliers");
+                    b.ToTable("suppliers", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.SupplierOffer", b =>
@@ -394,7 +394,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasIndex("SupplierId", "MaterialCatalogId")
                         .IsUnique();
 
-                    b.ToTable("supplier_offers");
+                    b.ToTable("supplier_offers", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Projects.Domain.Model.Aggregates.Project", b =>
@@ -477,7 +477,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .IsUnique()
                         .HasDatabaseName("i_x_projects_name");
 
-                    b.ToTable("projects");
+                    b.ToTable("projects", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Projects.Domain.Model.Aggregates.ProjectItem", b =>
@@ -518,7 +518,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasIndex("ProjectId")
                         .HasDatabaseName("i_x_project_items_project_id");
 
-                    b.ToTable("project_items");
+                    b.ToTable("project_items", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Team.TeamUser.domain.model.Aggregates.TeamUser", b =>
@@ -684,7 +684,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
 
                             b1.HasKey("TeamUserId");
 
-                            b1.ToTable("team_user");
+                            b1.ToTable("team_user", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("TeamUserId");

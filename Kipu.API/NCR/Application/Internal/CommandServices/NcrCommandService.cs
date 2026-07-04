@@ -18,7 +18,7 @@ public class NcrCommandService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<NCR.Domain.Model.Aggregates.Ncr, string>> HandleCreateAsync(string title, string description, string taskName, int severity, int projectId)
+    public async Task<Result<NCR.Domain.Model.Aggregates.Ncr, string>> HandleCreateAsync(string title, string description, int severity, int projectId, string speciality)
     {
         try
         {
@@ -26,7 +26,7 @@ public class NcrCommandService
                 return new Result<NCR.Domain.Model.Aggregates.Ncr, string>.Failure("Invalid severity value.");
 
             var ncrSeverity = (NcrSeverity)severity;
-            var ncr = new NCR.Domain.Model.Aggregates.Ncr(title, description, taskName, ncrSeverity, projectId);
+            var ncr = new NCR.Domain.Model.Aggregates.Ncr(title, description, ncrSeverity, projectId, speciality);
 
             await _ncrRepository.AddAsync(ncr);
             await _unitOfWork.CompleteAsync();

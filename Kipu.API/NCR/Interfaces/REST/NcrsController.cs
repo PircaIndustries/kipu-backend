@@ -25,7 +25,7 @@ public class NcrsController : ControllerBase
     public async Task<IActionResult> CreateNcr([FromBody] CreateNcrResource resource)
     {
         var result = await _ncrCommandService.HandleCreateAsync(
-            resource.Title, resource.Description, resource.TaskName, resource.Severity, resource.ProjectId);
+            resource.Title, resource.Description, resource.Severity, resource.ProjectId, resource.Speciality);
 
         return result.Fold<IActionResult>(
             onSuccess: ncr => CreatedAtAction(nameof(GetNcrById), new { id = ncr.Id }, MapToResource(ncr)),
@@ -52,8 +52,12 @@ public class NcrsController : ControllerBase
     private static NcrResource MapToResource(NCR.Domain.Model.Aggregates.Ncr ncr)
     {
         return new NcrResource(
-            ncr.Id, ncr.Title, ncr.Description, ncr.TaskName, 
-            ncr.Severity.ToString(), ncr.ProjectId, ncr.Status.ToString(), 
-            ncr.RootCause, ncr.CorrectiveAction);
+            ncr.Id, 
+            ncr.Title, 
+            ncr.Description,
+            ncr.Severity.ToString(), 
+            ncr.ProjectId, 
+            ncr.Speciality
+        );
     }
 }

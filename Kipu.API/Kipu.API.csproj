@@ -33,7 +33,6 @@
       <Folder Include="IAM\Interfaces\" />
       <Folder Include="NCR\Application\Internal\QueryServices\" />
       <Folder Include="NCR\Application\Services\" />
-      <Folder Include="NCR\Domain\Model\Entities\" />
       <Folder Include="NCR\Interfaces\REST\Transform\" />
     </ItemGroup>
 
