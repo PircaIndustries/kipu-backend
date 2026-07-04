@@ -9,6 +9,7 @@ using Kipu.API.Shared.Infrastructure.Persistence.EFC.Interceptors;
 using Kipu.API.Team.TeamUser.domain.model.Aggregates;
 using Kipu.API.Team.TeamWorker.Domain.Model.Aggregates;
 using Kipu.API.Team.TeamWorker.Domain.Model.ValueObjects;
+using Kipu.API.NCR.Domain.Model.Aggregates;
 using Microsoft.EntityFrameworkCore;
 using TeamUserId = Kipu.API.Team.TeamUser.domain.model.ValueObjects.UserId;
 namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -27,6 +28,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Kipu.API.Budget.Domain.Model.Aggregates.BudgetItem> BudgetItems { get; set; }
     public DbSet<Kipu.API.Progress.Domain.Model.Aggregates.ProgressItem> ProgressItems { get; set; }
     public DbSet<Kipu.API.Budget.Domain.Model.Entities.BudgetTransaction> BudgetTransactions { get; set; }
+    public DbSet<NCR.Domain.Model.Aggregates.Ncr> Ncrs { get; set; }
     
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -399,6 +401,28 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             {
                 tn.Property(t => t.Value).HasColumnName("task_name").HasMaxLength(150).IsRequired();
             });
+        });
+        
+        //Ncr's
+        builder.Entity<NCR.Domain.Model.Aggregates.Ncr>(entity =>
+        {
+            entity.ToTable("ncrs");
+            entity.HasKey(n => n.Id);
+            entity.Property(n => n.Id).ValueGeneratedOnAdd();
+    
+            entity.Property(n => n.Title).IsRequired().HasMaxLength(150);
+            entity.Property(n => n.Description).IsRequired().HasMaxLength(1000);
+            entity.Property(n => n.TaskName).IsRequired().HasMaxLength(250);
+            entity.Property(n => n.ProjectId).IsRequired();
+    
+            entity.Property(n => n.Severity).HasConversion<int>().IsRequired();
+            entity.Property(n => n.Status).HasConversion<int>().IsRequired();
+
+            entity.Property(n => n.RootCause).HasMaxLength(500);
+            entity.Property(n => n.CorrectiveAction).HasMaxLength(500);
+
+            entity.Property(n => n.CreatedAt).HasColumnName("created_at");
+            entity.Property(n => n.UpdatedAt).HasColumnName("updated_at");
         });
     }
 }
