@@ -5,7 +5,7 @@ namespace Kipu.API.Ncr.Interfaces.REST.Resources;
 public record CreateNcrResource(
     [Required] string Title,
     [Required] string Description,
-    [Required] int Severity,
+    [Required] string Severity,
     [Required] int ProjectId,
     [Required] string Speciality
 );

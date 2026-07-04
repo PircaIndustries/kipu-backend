@@ -2,7 +2,8 @@
 
 public enum NcrSeverity
 {
-    Baja = 1,
-    Media = 2,
-    Alta = 3
+    Bajo,
+    Moderado,
+    Alto,
+    Critico
 }

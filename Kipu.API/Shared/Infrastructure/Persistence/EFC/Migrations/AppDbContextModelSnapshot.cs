@@ -738,6 +738,52 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                 {
                     b.Navigation("Items");
                 });
+            modelBuilder.Entity("Kipu.API.NCR.Domain.Model.Aggregates.Ncr", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int")
+                    .HasColumnName("id");
+
+                b.Property<DateTimeOffset?>("CreatedAt")
+                    .HasColumnType("datetime(6)")
+                    .HasColumnName("created_at");
+
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasMaxLength(1000)
+                    .HasColumnType("varchar(1000)")
+                    .HasColumnName("description");
+
+                b.Property<int>("ProjectId")
+                    .HasColumnType("int")
+                    .HasColumnName("project_id");
+
+                b.Property<int>("Severity")
+                    .HasColumnType("int")
+                    .HasColumnName("severity");
+
+                b.Property<string>("Speciality")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("varchar(50)")
+                    .HasColumnName("speciality");
+
+                b.Property<string>("Title")
+                    .IsRequired()
+                    .HasMaxLength(150)
+                    .HasColumnType("varchar(150)")
+                    .HasColumnName("title");
+
+                b.Property<DateTimeOffset?>("UpdatedAt")
+                    .HasColumnType("datetime(6)")
+                    .HasColumnName("updated_at");
+
+                b.HasKey("Id")
+                    .HasName("pk_ncrs");
+
+                b.ToTable("ncrs", (string)null);
+            });
 #pragma warning restore 612, 618
         }
     }

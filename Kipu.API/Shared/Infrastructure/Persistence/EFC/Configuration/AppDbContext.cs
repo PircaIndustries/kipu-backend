@@ -436,8 +436,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             entity.Property(n => n.Title).IsRequired().HasMaxLength(150);
             entity.Property(n => n.Description).IsRequired().HasMaxLength(1000);
             entity.Property(n => n.ProjectId).IsRequired();
-    
-            entity.Property(n => n.Severity).HasConversion<int>().IsRequired();
+            entity.Property(n => n.Severity)
+                .HasConversion<string>()
+                .IsRequired()
+                .HasMaxLength(50);
             entity.Property(n => n.Speciality).IsRequired().HasMaxLength(50);
 
             entity.Property(n => n.CreatedAt).HasColumnName("created_at");

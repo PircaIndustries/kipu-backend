@@ -1,5 +1,4 @@
-﻿using Kipu.API.Ncr.Domain.Model.ValueObjects;
-using Kipu.API.NCR.Domain.Model.ValueObjects;
+﻿using Kipu.API.NCR.Domain.Model.ValueObjects;
 using Kipu.API.Shared.Domain.Model;
 
 namespace Kipu.API.NCR.Domain.Model.Aggregates;

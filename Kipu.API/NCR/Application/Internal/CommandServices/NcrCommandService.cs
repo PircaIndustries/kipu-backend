@@ -1,5 +1,4 @@
 ﻿using Kipu.API.NCR.Domain.Model.Aggregates;
-using Kipu.API.Ncr.Domain.Model.ValueObjects;
 using Kipu.API.NCR.Domain.Model.ValueObjects;
 using Kipu.API.NCR.Domain.Repositories;
 using Kipu.API.Shared.Application.Patterns;
@@ -18,14 +17,15 @@ public class NcrCommandService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<NCR.Domain.Model.Aggregates.Ncr, string>> HandleCreateAsync(string title, string description, int severity, int projectId, string speciality)
+    public async Task<Result<NCR.Domain.Model.Aggregates.Ncr, string>> HandleCreateAsync(
+        string title, string description, string severity, int projectId, string speciality)
     {
         try
         {
-            if (!Enum.IsDefined(typeof(NcrSeverity), severity))
+            if (!Enum.TryParse(typeof(NcrSeverity), severity, true, out var parsedSeverity))
                 return new Result<NCR.Domain.Model.Aggregates.Ncr, string>.Failure("Invalid severity value.");
 
-            var ncrSeverity = (NcrSeverity)severity;
+            var ncrSeverity = (NcrSeverity)parsedSeverity;
             var ncr = new NCR.Domain.Model.Aggregates.Ncr(title, description, ncrSeverity, projectId, speciality);
 
             await _ncrRepository.AddAsync(ncr);

@@ -47,7 +47,11 @@ builder.Services.AddLocalization();
 // Add services to the container.
 
 builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()))
-    .AddDataAnnotationsLocalization();
+    .AddDataAnnotationsLocalization()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 
 // Register RFC 7807 ProblemDetails payloads for centralized exception handling.
 builder.Services.AddProblemDetails(options =>
@@ -208,6 +212,10 @@ builder.Services.AddScoped<Kipu.API.Budget.Application.Services.IBudgetQueryServ
 builder.Services.AddScoped<Kipu.API.Progress.Domain.Repositories.IProgressItemRepository, Kipu.API.Progress.Infrastructure.ProgressItemRepository>();
 builder.Services.AddScoped<Kipu.API.Progress.Application.Services.IProgressCommandService, Kipu.API.Progress.Application.Internal.CommandServices.ProgressCommandService>();
 builder.Services.AddScoped<Kipu.API.Progress.Application.Services.IProgressQueryService, Kipu.API.Progress.Application.Internal.QueryServices.ProgressQueryService>();
+
+// NCR Bounded Context Dependencies Injections
+builder.Services.AddScoped<Kipu.API.NCR.Domain.Repositories.INcrRepository, Kipu.API.Ncr.Infrastructure.Persistence.EFC.Repositories.NcrRepository>();
+builder.Services.AddScoped<Kipu.API.Ncr.Application.Internal.CommandServices.NcrCommandService>();
 
 var app = builder.Build();
 
