@@ -48,8 +48,8 @@ public class DocumentCommandService : IDocumentCommandService
 
         var participant = document.Participants.FirstOrDefault(p => p.TeamUserId == command.TeamUserId);
         
-        if (participant is null) 
-            throw new InvalidOperationException("The user doesn't belong to this document");
+        if (participant is null)
+            return null;
 
         participant.MarkAsSigned();
 

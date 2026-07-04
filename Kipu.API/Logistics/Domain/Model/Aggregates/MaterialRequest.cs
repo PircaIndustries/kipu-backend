@@ -64,6 +64,8 @@ public class MaterialRequest
             Purpose = command.Purpose;
         if (command.AdditionalNotes is not null)
             AdditionalNotes = command.AdditionalNotes;
+        if (command.RequestStatus.HasValue)
+            RequestStatus = command.RequestStatus.Value;
         if (command.Items is not null)
         {
             foreach (var itemCommand in command.Items)
@@ -94,7 +96,7 @@ public class MaterialRequest
     public RequestStatus RequestStatus { get; private set; }
     public RequestPriority RequestPriority { get; private set; }
     public String DeliveryLocation { get; private set; }
-    public BudgetLineId BudgetLineId { get; private set; }
+    public BudgetLineId? BudgetLineId { get; private set; }
     public String Purpose { get; private set; }
     public String AdditionalNotes { get; private set; }
     public UserId RequestedBy { get; private set; }

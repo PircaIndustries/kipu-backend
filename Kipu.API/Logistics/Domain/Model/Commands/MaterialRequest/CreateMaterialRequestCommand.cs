@@ -7,7 +7,7 @@ public record CreateMaterialRequestCommand(
     DateTime Deadline,
     RequestPriority RequestPriority,
     string DeliveryLocation,
-    BudgetLineId BudgetLineId,
+    BudgetLineId? BudgetLineId,
     string Purpose,
     string AdditionalNotes,
     UserId RequestedBy,

@@ -69,6 +69,9 @@
     <data name="UnexpectedErrorUpdatingSupplier" xml:space="preserve">
         <value>Ocurrió un error inesperado al intentar actualizar el proveedor.</value>
     </data>
+    <data name="UnexpectedErrorDeletingSupplier" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar eliminar el proveedor.</value>
+    </data>
     <data name="SupplierDuplicated" xml:space="preserve">
         <value>Ya existe un proveedor con el RUC proporcionado.</value>
     </data>
@@ -92,5 +95,122 @@
     </data>
     <data name="MaterialCategoryNotFound" xml:space="preserve">
         <value>La categoría de materiales no fue encontrada.</value>
+    </data>
+    <data name="MaterialCategoryDuplicated" xml:space="preserve">
+        <value>Ya existe una categoría de materiales con ese nombre.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMaterialCategory" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar actualizar la categoría de materiales.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMaterialCategory" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar eliminar la categoría de materiales.</value>
+    </data>
+    <data name="MaterialCatalogDuplicated" xml:space="preserve">
+        <value>Ya existe una entrada en el catálogo de materiales con ese nombre.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMaterialCatalog" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar actualizar el catálogo de materiales.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMaterialCatalog" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar eliminar el catálogo de materiales.</value>
+    </data>
+    <data name="CategoryNotFound" xml:space="preserve">
+        <value>La categoría especificada no fue encontrada.</value>
+    </data>
+    <data name="MaterialInventoryNotFound" xml:space="preserve">
+        <value>El inventario de materiales no fue encontrado.</value>
+    </data>
+    <data name="UnexpectedErrorUpdatingMaterialInventory" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar actualizar el inventario de materiales.</value>
+    </data>
+    <data name="UnexpectedErrorDeletingMaterialInventory" xml:space="preserve">
+        <value>Ocurrió un error inesperado al intentar eliminar el inventario de materiales.</value>
+    </data>
+    <data name="SupplierOfferDuplicated" xml:space="preserve">
+        <value>Ya existe una oferta de proveedor para este proveedor y material.</value>
+    </data>
+    <data name="SupplierOfferNotFound" xml:space="preserve">
+        <value>La oferta de proveedor no fue encontrada.</value>
+    </data>
+    <data name="InvalidSupplierOfferRequest" xml:space="preserve">
+        <value>Los datos de la oferta de proveedor son inválidos.</value>
+    </data>
+    <data name="EmailAlreadyRegistered" xml:space="preserve">
+        <value>El correo electrónico ya está registrado.</value>
+    </data>
+    <data name="InvalidRole" xml:space="preserve">
+        <value>Rol inválido. Los roles válidos son: Administrador, Gestor Operativo, Logística y Administración, Cliente, Ingeniero.</value>
+    </data>
+    <data name="InvalidCredentials" xml:space="preserve">
+        <value>Correo electrónico o contraseña inválidos.</value>
+    </data>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>Usuario no encontrado.</value>
+    </data>
+    <data name="RoleRequired" xml:space="preserve">
+        <value>Se debe proporcionar al menos un rol.</value>
+    </data>
+    <data name="UserNotFoundWithId" xml:space="preserve">
+        <value>Usuario con ID {0} no encontrado.</value>
+    </data>
+    <data name="ProjectNameAlreadyExists" xml:space="preserve">
+        <value>Ya existe un proyecto con ese nombre.</value>
+    </data>
+    <data name="ProjectNotFound" xml:space="preserve">
+        <value>Proyecto no encontrado.</value>
+    </data>
+    <data name="JustificationRequired" xml:space="preserve">
+        <value>Se requiere una justificación para cambiar el estado del proyecto.</value>
+    </data>
+    <data name="InvalidProjectStatus" xml:space="preserve">
+        <value>Estado de proyecto inválido.</value>
+    </data>
+    <data name="InvalidItemDates" xml:space="preserve">
+        <value>La fecha de fin no puede ser anterior a la fecha de inicio.</value>
+    </data>
+    <data name="ProjectNotFoundWithId" xml:space="preserve">
+        <value>Proyecto con ID {0} no encontrado.</value>
+    </data>
+    <data name="TeamUserNotFound" xml:space="preserve">
+        <value>Usuario del equipo no encontrado.</value>
+    </data>
+    <data name="TeamUserDuplicated" xml:space="preserve">
+        <value>Ya existe un usuario del equipo con este correo en el proyecto.</value>
+    </data>
+    <data name="TeamUserNotCreated" xml:space="preserve">
+        <value>No se pudo crear el usuario del equipo.</value>
+    </data>
+    <data name="TeamUserNotActivated" xml:space="preserve">
+        <value>No se pudo activar el usuario del equipo.</value>
+    </data>
+    <data name="TeamUserNotDeactivated" xml:space="preserve">
+        <value>No se pudo desactivar el usuario del equipo.</value>
+    </data>
+    <data name="TeamWorkerNotFound" xml:space="preserve">
+        <value>Trabajador del equipo no encontrado.</value>
+    </data>
+    <data name="TeamWorkerNotCreated" xml:space="preserve">
+        <value>No se pudo crear el trabajador del equipo.</value>
+    </data>
+    <data name="TeamWorkerNotDeleted" xml:space="preserve">
+        <value>No se pudo eliminar el trabajador del equipo.</value>
+    </data>
+    <data name="MachineryAssignmentFailed" xml:space="preserve">
+        <value>Ocurrió un error al asignar la maquinaria.</value>
+    </data>
+    <data name="MachineryRemovalFailed" xml:space="preserve">
+        <value>Ocurrió un error al remover la maquinaria.</value>
+    </data>
+    <data name="DocumentNotFound" xml:space="preserve">
+        <value>Documento no encontrado.</value>
+    </data>
+    <data name="DocumentNotCreated" xml:space="preserve">
+        <value>No se pudo crear el documento.</value>
+    </data>
+    <data name="DocumentSignFailed" xml:space="preserve">
+        <value>Ocurrió un error al firmar el documento.</value>
+    </data>
+    <data name="UserNotDocumentParticipant" xml:space="preserve">
+        <value>El usuario no es participante de este documento.</value>
     </data>
 </root>

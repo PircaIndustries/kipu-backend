@@ -221,7 +221,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .HasColumnType("varchar(2000)")
                         .HasColumnName("additional_notes");
 
-                    b.Property<int>("BudgetLineId")
+                    b.Property<int?>("BudgetLineId")
                         .HasColumnType("int")
                         .HasColumnName("budget_line_id");
 
@@ -369,6 +369,32 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .HasDatabaseName("i_x_suppliers_ruc");
 
                     b.ToTable("suppliers");
+                });
+
+            modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.SupplierOffer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<int>("MaterialCatalogId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("unit_price");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_supplier_offers");
+
+                    b.HasIndex("SupplierId", "MaterialCatalogId")
+                        .IsUnique();
+
+                    b.ToTable("supplier_offers");
                 });
 
             modelBuilder.Entity("Kipu.API.Projects.Domain.Model.Aggregates.Project", b =>

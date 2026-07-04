@@ -13,7 +13,7 @@ public static class UpdateMaterialRequestCommandFromResourceAssembler
             resource.Deadline,
             Enum.Parse<RequestPriority>(resource.RequestPriority),
             resource.DeliveryLocation,
-            new BudgetLineId(resource.BudgetLineId),
+            resource.BudgetLineId.HasValue ? new BudgetLineId(resource.BudgetLineId.Value) : null,
             resource.Purpose,
             resource.AdditionalNotes ?? string.Empty,
             resource.Items.Select(i => new MaterialRequestItemCommand(

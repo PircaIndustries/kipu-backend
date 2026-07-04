@@ -42,10 +42,9 @@ public record UpdateSupplierResource(
     [SwaggerParameter(Description = "The supplier's email address")]
     string Email,
 
-    [Required]
     [StringLength(500)]
     [SwaggerParameter(Description = "The payment terms agreed with the supplier")]
-    string PaymentTerms,
+    string? PaymentTerms,
 
     [Required]
     [SwaggerParameter(Description = "Indicates whether the supplier is active")]

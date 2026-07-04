@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 namespace Kipu.API.Team.TeamWorker.Interfaces.Resources;
 
 public record AssignMachineryResource(
-    [Required(ErrorMessage = "Machinery ID is required.")]
+    [Required]
     string MachineryId, 
 
-    [Required(ErrorMessage = "Machinery full name is required.")]
-    [MaxLength(200, ErrorMessage = "Machinery full name cannot exceed 200 characters.")]
+    [Required]
+    [MaxLength(200)]
     string FullName
 );

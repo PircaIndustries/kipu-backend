@@ -12,7 +12,7 @@ public static class MaterialRequestResourceFromEntityAssembler
             entity.RequestStatus.ToString(),
             entity.RequestPriority.ToString(),
             entity.DeliveryLocation,
-            entity.BudgetLineId.Value,
+            entity.BudgetLineId?.Value,
             entity.Purpose,
             entity.AdditionalNotes,
             entity.RequestedBy.Value,

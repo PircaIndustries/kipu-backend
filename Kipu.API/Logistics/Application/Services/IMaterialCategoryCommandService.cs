@@ -8,4 +8,6 @@ namespace Kipu.API.Logistics.Application.Services;
 public interface IMaterialCategoryCommandService
 {
     Task<Result<MaterialCategory, CreateMaterialCategoryError>> Handle(CreateMaterialCategoryCommand command, CancellationToken cancellationToken = default);
+    Task<Result<MaterialCategory, UpdateMaterialCategoryError>> Handle(UpdateMaterialCategoryCommand command, CancellationToken cancellationToken = default);
+    Task<Result<MaterialCategory, UpdateMaterialCategoryError>> HandleDelete(int id, CancellationToken cancellationToken = default);
 }

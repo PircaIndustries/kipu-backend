@@ -67,6 +67,81 @@ public class MaterialInventoryCommandService(
                 CreateMaterialInventoryError.UnexpectedError);
         }
     }
+    public async Task<Result<MaterialInventory, UpdateMaterialInventoryError>> Handle(
+        UpdateMaterialInventoryCommand command, CancellationToken cancellationToken = default)
+    {
+        var catalogItem =
+            await materialCatalogRepository.FindByIdAsync(command.MaterialCatalogId.Value, cancellationToken);
+        if (catalogItem == null)
+        {
+            logger.LogWarning("The inventory cannot be updated. The material {MaterialId} does not exist in the catalog.",
+                command.MaterialCatalogId.Value);
+            return new Result<MaterialInventory, UpdateMaterialInventoryError>.Failure(
+                UpdateMaterialInventoryError.MaterialCatalogNotFound);
+        }
+        try
+        {
+            var materialInventory = await materialInventoryRepository.FindByIdAsync(command.Id, cancellationToken);
+            if (materialInventory is null)
+            {
+                logger.LogWarning("Material inventory with ID {Id} not found", command.Id);
+                return new Result<MaterialInventory, UpdateMaterialInventoryError>.Failure(
+                    UpdateMaterialInventoryError.MaterialInventoryNotFound);
+            }
+            materialInventory.Update(command);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return new Result<MaterialInventory, UpdateMaterialInventoryError>.Success(materialInventory);
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid arguments when updating material inventory with ID {Id}", command.Id);
+            return new Result<MaterialInventory, UpdateMaterialInventoryError>.Failure(
+                UpdateMaterialInventoryError.UnexpectedError);
+        }
+        catch (DbUpdateException ex) when (IsDuplicateKeyViolation(ex))
+        {
+            logger.LogWarning(ex, "Duplicate key violation updating material inventory with ID {Id}", command.Id);
+            return new Result<MaterialInventory, UpdateMaterialInventoryError>.Failure(
+                UpdateMaterialInventoryError.DuplicatedMaterialInventory);
+        }
+        catch (DbUpdateException ex)
+        {
+            logger.LogError(ex, "Database update failed updating material inventory with ID {Id}", command.Id);
+            return new Result<MaterialInventory, UpdateMaterialInventoryError>.Failure(
+                UpdateMaterialInventoryError.UnexpectedError);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error updating material inventory with ID {Id}", command.Id);
+            return new Result<MaterialInventory, UpdateMaterialInventoryError>.Failure(
+                UpdateMaterialInventoryError.UnexpectedError);
+        }
+    }
+
+    public async Task<Result<MaterialInventory, UpdateMaterialInventoryError>> HandleDelete(int id,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var materialInventory = await materialInventoryRepository.FindByIdAsync(id, cancellationToken);
+            if (materialInventory is null)
+            {
+                logger.LogWarning("Material inventory with ID {Id} not found for deletion", id);
+                return new Result<MaterialInventory, UpdateMaterialInventoryError>.Failure(
+                    UpdateMaterialInventoryError.MaterialInventoryNotFound);
+            }
+            materialInventoryRepository.Remove(materialInventory);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return new Result<MaterialInventory, UpdateMaterialInventoryError>.Success(materialInventory);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error deleting material inventory with ID {Id}", id);
+            return new Result<MaterialInventory, UpdateMaterialInventoryError>.Failure(
+                UpdateMaterialInventoryError.UnexpectedError);
+        }
+    }
+
     private static bool IsDuplicateKeyViolation(DbUpdateException exception)
     {
         for (Exception? current = exception; current is not null; current = current.InnerException)

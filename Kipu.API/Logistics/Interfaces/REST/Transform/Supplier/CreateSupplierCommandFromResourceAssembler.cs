@@ -13,6 +13,6 @@ public static class CreateSupplierCommandFromResourceAssembler
             resource.Contact,
             new Phone(resource.Phone),
             new Email(resource.Email),
-            resource.PaymentTerms
+            resource.PaymentTerms ?? string.Empty
         );
 }

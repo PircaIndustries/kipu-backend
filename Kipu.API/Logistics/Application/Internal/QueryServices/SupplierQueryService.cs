@@ -23,4 +23,10 @@ public class SupplierQueryService(ISupplierRepository supplierRepository)
     {
         return await supplierRepository.FindByIsActive(query.IsActive, cancellationToken);
     }
+
+    public async Task<IEnumerable<Supplier?>> Handle(GetAllSuppliersQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        return await supplierRepository.ListAsync(cancellationToken);
+    }
 }

@@ -24,6 +24,15 @@ public partial class MaterialInventory
         MinimumStock = command.MinimumStock ?? new Quantity(0);
         Location = command.Location;
     }
+    public void Update(UpdateMaterialInventoryCommand command)
+    {
+        ProjectId = command.ProjectId;
+        MaterialCatalogId = command.MaterialCatalogId;
+        CurrentStock = command.CurrentStock;
+        MinimumStock = command.MinimumStock;
+        Location = command.Location;
+    }
+
     public int Id { get; private set; }
     public ProjectId ProjectId { get; private set; }
     public MaterialCatalogId MaterialCatalogId { get; private set; }

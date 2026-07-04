@@ -13,4 +13,10 @@ public class MaterialCatalogQueryService(IMaterialCatalogRepository materialCata
     {
         return await materialCatalogRepository.FindByIdAsync(query.Id, cancellationToken);
     }
+
+    public async Task<IEnumerable<MaterialCatalog?>> Handle(GetAllMaterialsCatalogQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        return await materialCatalogRepository.ListAsync(cancellationToken);
+    }
 }

@@ -18,9 +18,8 @@ public record UpdateMaterialRequestResource(
     [SwaggerParameter(Description = "The delivery location")]
     string DeliveryLocation,
 
-    [Required]
-    [SwaggerParameter(Description = "The budget line ID")]
-    int BudgetLineId,
+    [SwaggerParameter(Description = "The budget line ID (optional)")]
+    int? BudgetLineId,
 
     [Required]
     [StringLength(1000)]

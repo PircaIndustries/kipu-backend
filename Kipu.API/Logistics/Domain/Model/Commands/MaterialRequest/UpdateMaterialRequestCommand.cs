@@ -8,7 +8,7 @@ public record UpdateMaterialRequestCommand(
     DateTime Deadline,
     RequestPriority RequestPriority,
     string DeliveryLocation,
-    BudgetLineId BudgetLineId,
+    BudgetLineId? BudgetLineId,
     string Purpose,
     string AdditionalNotes,
     List<MaterialRequestItemCommand> Items);

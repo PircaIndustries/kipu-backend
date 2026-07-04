@@ -18,12 +18,12 @@ public class UserCommandService(
     {
         if (await userRepository.ExistsByEmailAsync(command.Email))
         {
-            return new Result<User, string>.Failure("Email is already registered.");
+            return new Result<User, string>.Failure("EmailAlreadyRegistered");
         }
 
         if (!Roles.IsValid(command.Role))
         {
-            return new Result<User, string>.Failure($"Invalid role. Valid roles are: {string.Join(", ", Roles.All)}.");
+            return new Result<User, string>.Failure("InvalidRole");
         }
 
         var hashedPassword = hashingService.HashPassword(command.Password);
@@ -37,7 +37,7 @@ public class UserCommandService(
         }
         catch (Exception ex)
         {
-            return new Result<User, string>.Failure($"An error occurred while saving the user: {ex.Message}");
+            return new Result<User, string>.Failure(ex.Message);
         }
     }
 
@@ -46,7 +46,7 @@ public class UserCommandService(
         var user = await userRepository.FindByEmailAsync(command.Email);
         if (user == null || !hashingService.VerifyPassword(command.Password, user.PasswordHash))
         {
-            return new Result<(User User, string Token), string>.Failure("Invalid email or password.");
+            return new Result<(User User, string Token), string>.Failure("InvalidCredentials");
         }
 
         var token = tokenService.GenerateToken(user);
@@ -58,20 +58,20 @@ public class UserCommandService(
         var user = await userRepository.FindByIdAsync(command.UserId);
         if (user == null)
         {
-            return new Result<User, string>.Failure("User not found.");
+            return new Result<User, string>.Failure("UserNotFound");
         }
 
         foreach (var role in command.Roles)
         {
             if (!Roles.IsValid(role))
             {
-                return new Result<User, string>.Failure($"Invalid role '{role}'. Valid roles are: {string.Join(", ", Roles.All)}.");
+                return new Result<User, string>.Failure("InvalidRole");
             }
         }
 
         if (command.Roles.Count == 0)
         {
-            return new Result<User, string>.Failure("At least one role must be provided.");
+            return new Result<User, string>.Failure("RoleRequired");
         }
 
         user.Role = command.Roles[0]; // Assuming single role per user based on DB schema
@@ -84,7 +84,7 @@ public class UserCommandService(
         }
         catch (Exception ex)
         {
-            return new Result<User, string>.Failure($"An error occurred while updating user roles: {ex.Message}");
+            return new Result<User, string>.Failure(ex.Message);
         }
     }
 }

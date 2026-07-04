@@ -13,7 +13,7 @@ public class MaterialCatalogCommandService(
     IMaterialCatalogRepository materialCatalogRepository,
     IMaterialCategoryRepository materialCategoryRepository,
     IUnitOfWork unitOfWork,
-    ILogger<MaterialInventoryCommandService> logger)
+    ILogger<MaterialCatalogCommandService> logger)
 : IMaterialCatalogCommandService
 {
     public async Task<Result<MaterialCatalog, CreateMaterialCatalogError>> Handle(
@@ -68,6 +68,80 @@ public class MaterialCatalogCommandService(
                 CreateMaterialCatalogError.UnexpectedError);
         }
     }
+    public async Task<Result<MaterialCatalog, UpdateMaterialCatalogError>> Handle(
+        UpdateMaterialCatalogCommand command, CancellationToken cancellationToken = default)
+    {
+        var categoryItem = await materialCategoryRepository.FindByIdAsync(command.CategoryId.Value, cancellationToken);
+        if (categoryItem == null)
+        {
+            logger.LogWarning("The material catalog cannot be updated. The category {CategoryId} does not exist.",
+                command.CategoryId.Value);
+            return new Result<MaterialCatalog, UpdateMaterialCatalogError>.Failure(
+                UpdateMaterialCatalogError.CategoryNotFound);
+        }
+        try
+        {
+            var materialCatalog = await materialCatalogRepository.FindByIdAsync(command.Id, cancellationToken);
+            if (materialCatalog is null)
+            {
+                logger.LogWarning("Material catalog with ID {Id} not found", command.Id);
+                return new Result<MaterialCatalog, UpdateMaterialCatalogError>.Failure(
+                    UpdateMaterialCatalogError.MaterialCatalogNotFound);
+            }
+            materialCatalog.Update(command);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return new Result<MaterialCatalog, UpdateMaterialCatalogError>.Success(materialCatalog);
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid arguments when updating material catalog with ID {Id}", command.Id);
+            return new Result<MaterialCatalog, UpdateMaterialCatalogError>.Failure(
+                UpdateMaterialCatalogError.UnexpectedError);
+        }
+        catch (DbUpdateException ex) when (IsDuplicateKeyViolation(ex))
+        {
+            logger.LogWarning(ex, "Duplicate key violation updating material catalog with ID {Id}", command.Id);
+            return new Result<MaterialCatalog, UpdateMaterialCatalogError>.Failure(
+                UpdateMaterialCatalogError.DuplicatedMaterialCatalog);
+        }
+        catch (DbUpdateException ex)
+        {
+            logger.LogError(ex, "Database update failed updating material catalog with ID {Id}", command.Id);
+            return new Result<MaterialCatalog, UpdateMaterialCatalogError>.Failure(
+                UpdateMaterialCatalogError.UnexpectedError);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error updating material catalog with ID {Id}", command.Id);
+            return new Result<MaterialCatalog, UpdateMaterialCatalogError>.Failure(
+                UpdateMaterialCatalogError.UnexpectedError);
+        }
+    }
+
+    public async Task<Result<MaterialCatalog, UpdateMaterialCatalogError>> HandleDelete(int id,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var materialCatalog = await materialCatalogRepository.FindByIdAsync(id, cancellationToken);
+            if (materialCatalog is null)
+            {
+                logger.LogWarning("Material catalog with ID {Id} not found for deletion", id);
+                return new Result<MaterialCatalog, UpdateMaterialCatalogError>.Failure(
+                    UpdateMaterialCatalogError.MaterialCatalogNotFound);
+            }
+            materialCatalogRepository.Remove(materialCatalog);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return new Result<MaterialCatalog, UpdateMaterialCatalogError>.Success(materialCatalog);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error deleting material catalog with ID {Id}", id);
+            return new Result<MaterialCatalog, UpdateMaterialCatalogError>.Failure(
+                UpdateMaterialCatalogError.UnexpectedError);
+        }
+    }
+
     private static bool IsDuplicateKeyViolation(DbUpdateException exception)
     {
         for (Exception? current = exception; current is not null; current = current.InnerException)
