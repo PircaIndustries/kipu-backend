@@ -55,4 +55,10 @@ public class TeamUserRepository : BaseAggregateRepository<domain.model.Aggregate
         return await query.ToListAsync();
     }
     
+    public async Task<IEnumerable<domain.model.Aggregates.TeamUser>> FindByUserIdAsync(int userId)
+    {
+        return await Context.Set<domain.model.Aggregates.TeamUser>()
+            .Where(u => u.UserId == userId && u.IsActive)
+            .ToListAsync();
+    }
 }

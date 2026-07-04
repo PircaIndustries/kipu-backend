@@ -3,6 +3,7 @@ using Kipu.API.IAM.Domain.Model.Aggregates;
 using Kipu.API.Projects.Domain.Model.Aggregates;
 using Kipu.API.Logistics.Domain.Model.Aggregates;
 using Kipu.API.Logistics.Domain.Model.ValueObjects;
+using Kipu.API.Logistics.MachineryCatalog.Domain.Model.Aggregates;
 using Kipu.API.Logistics.Domain.Model.ValueObjects.External;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Interceptors;
@@ -30,7 +31,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Kipu.API.Budget.Domain.Model.Entities.BudgetTransaction> BudgetTransactions { get; set; }
     public DbSet<SupplierOffer> SupplierOffers { get; set; }
     public DbSet<NCR.Domain.Model.Aggregates.Ncr> Ncrs { get; set; }
-    
+    public DbSet<MachineryAssignment> MachineryAssignments { get; set; }
+    public DbSet<MachineryCatalog> MachineryCatalogs { get; set; }
+    public DbSet<Kipu.API.Notifications.Domain.Model.Aggregates.Notification> Notifications { get; set; }
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -43,6 +46,10 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        // Notification mapping
+        builder.Entity<Kipu.API.Notifications.Domain.Model.Aggregates.Notification>().HasKey(n => n.Id);
+        builder.Entity<Kipu.API.Notifications.Domain.Model.Aggregates.Notification>().Property(n => n.Id).IsRequired().ValueGeneratedOnAdd();
 
         builder.Entity<User>().HasKey(u => u.Id);
         builder.Entity<User>().Property(u => u.Id).IsRequired().ValueGeneratedOnAdd();
@@ -59,7 +66,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Project>().Property(p => p.Location).IsRequired();
         builder.Entity<Project>().Property(p => p.Budget).IsRequired();
         builder.Entity<Project>().Property(p => p.Status).IsRequired();
-        builder.Entity<Project>().HasIndex(p => p.Name).IsUnique();
+        //builder.Entity<Project>().HasIndex(p => p.Name).IsUnique();
 
         // ProjectItem mapping
         builder.Entity<ProjectItem>().HasKey(pi => pi.Id);
@@ -253,7 +260,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .IsRequired()
                 .HasColumnType("decimal(18,2)");
 
-            entity.HasOne<MaterialRequest>()
+            entity.HasOne(i => i.MaterialRequest)
                 .WithMany(r => r.Items)
                 .HasForeignKey(i => i.MaterialRequestId)
                 .OnDelete(DeleteBehavior.Cascade);
@@ -281,6 +288,37 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
             entity.HasIndex(o => new { o.SupplierId, o.MaterialCatalogId }).IsUnique();
         });
+        // MACHINERY ASSIGNMENTS ---
+
+        builder.Entity<MachineryAssignment>().ToTable("machinery_assignments");
+
+        builder.Entity<MachineryAssignment>().HasKey(m => m.Id);
+        builder.Entity<MachineryAssignment>().Property(m => m.Id).HasColumnName("id").IsRequired();
+        builder.Entity<MachineryAssignment>().Property(m => m.ProjectId).HasColumnName("project_id").IsRequired();
+        builder.Entity<MachineryAssignment>().Property(m => m.MachineryId).HasColumnName("machinery_id").IsRequired();
+        builder.Entity<MachineryAssignment>().Property(m => m.Name).HasColumnName("name").IsRequired().HasMaxLength(200);
+        builder.Entity<MachineryAssignment>().Property(m => m.Status).HasColumnName("status").IsRequired().HasMaxLength(30);
+        builder.Entity<MachineryAssignment>().Property(m => m.AssignedTo).HasColumnName("assigned_to").HasMaxLength(100);
+        builder.Entity<MachineryAssignment>().Property(m => m.AssignedWorkerId).HasColumnName("assigned_worker_id").HasMaxLength(50);
+        builder.Entity<MachineryAssignment>().Property(m => m.RegistrationDate).HasColumnName("registration_date").IsRequired();
+        builder.Entity<MachineryAssignment>().Property(m => m.MaintenanceHours).HasColumnName("maintenance_hours").IsRequired().HasMaxLength(10);
+        builder.Entity<MachineryAssignment>().Property(m => m.AssignmentDetail).HasColumnName("assignment_detail").IsRequired().HasMaxLength(500);
+        builder.Entity<MachineryAssignment>().Property(m => m.CreatedAt).HasColumnName("created_at");
+        builder.Entity<MachineryAssignment>().Property(m => m.UpdatedAt).HasColumnName("updated_at");
+
+        // MachineryCatalog mapping
+        builder.Entity<MachineryCatalog>().ToTable("machinery_catalog");
+        builder.Entity<MachineryCatalog>().HasKey(m => m.Id);
+        builder.Entity<MachineryCatalog>().Property(m => m.Id).HasColumnName("id").IsRequired().HasMaxLength(36);
+        builder.Entity<MachineryCatalog>().Property(m => m.Name).HasColumnName("name").IsRequired().HasMaxLength(200);
+        builder.Entity<MachineryCatalog>().Property(m => m.Brand).HasColumnName("brand").IsRequired().HasMaxLength(200);
+        builder.Entity<MachineryCatalog>().Property(m => m.Model).HasColumnName("model").IsRequired().HasMaxLength(200);
+        builder.Entity<MachineryCatalog>().Property(m => m.SerialNumber).HasColumnName("serial_number").IsRequired().HasMaxLength(100);
+        builder.Entity<MachineryCatalog>().Property(m => m.AcquisitionDate).HasColumnName("acquisition_date").HasMaxLength(20);
+        builder.Entity<MachineryCatalog>().Property(m => m.CreatedAt).HasColumnName("created_at");
+        builder.Entity<MachineryCatalog>().Property(m => m.UpdatedAt).HasColumnName("updated_at");
+        builder.Entity<MachineryCatalog>().HasIndex(m => m.SerialNumber).IsUnique();
+
         // TEAM USERS ---
         
         builder.Entity<TeamUser>().ToTable("team_user");
@@ -289,14 +327,14 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<TeamUser>()
             .Property(t => t.Id)
             .HasColumnName("id")
-            .HasConversion(id => id.Value, value => new TeamUserId(value)) 
-            .IsRequired();
+            .HasConversion(id => id.Value, value => new TeamUserId(value)).HasMaxLength(36).IsRequired().ValueGeneratedNever();
 
         builder.Entity<TeamUser>().OwnsOne(t => t.Email, e =>
         {
             e.Property(p => p.Address).HasColumnName("email"); 
         });
 
+        builder.Entity<TeamUser>().Property(t => t.UserId).HasColumnName("user_id");
         builder.Entity<TeamUser>().Property(t => t.FullName).HasColumnName("full_name");
         builder.Entity<TeamUser>().Property(t => t.Role).HasColumnName("role");
         builder.Entity<TeamUser>().Property(t => t.ProjectId).HasColumnName("project_id");
@@ -447,3 +485,5 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         });
     }
 }
+
+

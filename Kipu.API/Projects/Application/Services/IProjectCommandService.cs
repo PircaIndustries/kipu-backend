@@ -8,5 +8,6 @@ public interface IProjectCommandService
 {
     Task<Result<Project, string>> Handle(CreateProjectCommand command);
     Task<Result<Project, string>> Handle(UpdateProjectStatusCommand command);
+    Task<Result<Project, string>> Handle(DeleteProjectCommand command);
     Task<Result<IEnumerable<ProjectItem>, string>> Handle(AddProjectItemsCommand command);
 }

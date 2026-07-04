@@ -29,9 +29,9 @@ public class ProjectsController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllProjects()
+    public async Task<IActionResult> GetAllProjects([FromQuery] string userId)
     {
-        var query = new GetAllProjectsQuery();
+        var query = new GetAllProjectsQuery(userId);
         var projects = await projectQueryService.Handle(query);
         var resources = projects.Select(ProjectResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(resources);
@@ -88,5 +88,17 @@ public class ProjectsController(
         var items = await projectQueryService.Handle(query);
         var resources = items.Select(ProjectItemResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(resources);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteProject(int id)
+    {
+        var command = new DeleteProjectCommand(id);
+        var result = await projectCommandService.Handle(command);
+
+        return result.Fold<IActionResult>(
+            project => Ok(new { message = "Project deleted successfully" }),
+            error => BadRequest(new { message = localizer[error].Value })
+        );
     }
 }

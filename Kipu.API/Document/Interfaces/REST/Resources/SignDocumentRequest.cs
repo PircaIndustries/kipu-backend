@@ -8,5 +8,13 @@ public record SignDocumentRequest(
 
     [Required]
     [MaxLength(150)]
-    string FullName
+    string FullName,
+
+    [Required]
+    [MaxLength(6)]
+    string Code,
+
+    [Required]
+    [MaxLength(200)]
+    string Email
 );

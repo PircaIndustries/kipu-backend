@@ -1,4 +1,7 @@
 using System.Net.Mime;
+using System.Text.Json;
+using Kipu.API.Notifications.Application.Services;
+using Kipu.API.Notifications.Domain.Model.Commands;
 using Kipu.API.Resources;
 using Kipu.API.Team.TeamUser.application.Services;
 using Kipu.API.Team.TeamUser.domain.model.Commands;
@@ -17,31 +20,35 @@ public class TeamUsersController : ControllerBase
 {
     private readonly ITeamUserCommandService _commandService;
     private readonly ITeamUserQueryService _queryService;
+    private readonly INotificationCommandService _notificationCommandService;
     private readonly IStringLocalizer<SharedResource> _localizer;
 
     public TeamUsersController(
         ITeamUserCommandService commandService,
         ITeamUserQueryService queryService,
+        INotificationCommandService notificationCommandService,
         IStringLocalizer<SharedResource> localizer)
     {
         _commandService = commandService;
         _queryService = queryService;
+        _notificationCommandService = notificationCommandService;
         _localizer = localizer;
     }
     
     [HttpPost]
     public async Task<ActionResult> CreateTeamUser([FromBody] CreateTeamUserResource resource)
     {
-        var command = CreateTeamUserCommandFromResourceAssembler.ToCommandFromResource(resource);
+        // Serialize resource into Payload
+        var payload = JsonSerializer.Serialize(resource);
+        var message = $"Has sido invitado a unirte al proyecto con el rol de {resource.Role}";
+        var notificationCommand = new CreateNotificationCommand(resource.UserId.ToString(), message, "ProjectInvitation", resource.ProjectId, payload);
         
-        var result = await _commandService.Handle(command);
+        var notificationResult = await _notificationCommandService.Handle(notificationCommand);
         
-        if (result is null)
-            return BadRequest(new { message = _localizer["TeamUserNotCreated"].Value });
+        if (notificationResult == null)
+            return BadRequest(new { message = "No se pudo enviar la invitaci�n." });
         
-        var userResource = TeamUserResourceFromEntityAssembler.ToResourceFromEntity(result);
-        
-        return CreatedAtAction(nameof(GetTeamUserById), new { id = userResource.Id }, userResource);
+        return Ok(new { message = "Invitaci�n enviada exitosamente." });
     }
     
     [HttpPost("{id}/activate")]
@@ -70,6 +77,31 @@ public class TeamUsersController : ControllerBase
         return Ok(resource);
     }
     
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteTeamUser(string id)
+    {
+        var command = new DeleteTeamUserCommand(id);
+        var result = await _commandService.Handle(command);
+
+        if (!result)
+            return NotFound(new { message = _localizer["TeamUserNotFound"].Value });
+
+        return NoContent();
+    }
+
+    [HttpPatch("{id}/role")]
+    public async Task<ActionResult> UpdateTeamUserRole(string id, [FromBody] UpdateTeamUserRoleResource resource)
+    {
+        var command = new UpdateTeamUserRoleCommand(id, resource.Role);
+        var result = await _commandService.Handle(command);
+
+        if (result is null)
+            return NotFound(new { message = _localizer["TeamUserNotFound"].Value });
+
+        var teamUserResource = TeamUserResourceFromEntityAssembler.ToResourceFromEntity(result);
+        return Ok(teamUserResource);
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult> GetTeamUserById(string id)
     {
@@ -83,6 +115,15 @@ public class TeamUsersController : ControllerBase
         return Ok(resource);
     }
     
+    [HttpGet("by-user/{userId}")]
+    public async Task<ActionResult> GetTeamUsersByUserId(int userId)
+    {
+        var query = new GetTeamUsersByUserIdQuery(userId);
+        var result = await _queryService.Handle(query);
+        var resources = result.Select(TeamUserResourceFromEntityAssembler.ToResourceFromEntity);
+        return Ok(resources);
+    }
+
     [HttpGet]
     public async Task<ActionResult> GetAllTeamUsers(
         [FromQuery] string projectId,

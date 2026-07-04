@@ -6,6 +6,8 @@ using Kipu.API.Resources;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Kipu.API.IAM.Interfaces.REST;
 
 [ApiController]
@@ -17,6 +19,7 @@ public class UsersController(
 {
     [HttpPost]
     [HttpPost("~/api/v1/identities")]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateUser([FromBody] SignUpResource resource)
     {
         var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(resource);
@@ -26,6 +29,31 @@ public class UsersController(
             user => CreatedAtAction(nameof(GetUserById), new { id = user.Id }, UserResourceFromEntityAssembler.ToResourceFromEntity(user)),
             error => BadRequest(new { message = localizer[error].Value })
         );
+    }
+
+    [HttpGet]
+    [HttpGet("~/api/v1/identities")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetUsers([FromQuery] string? email)
+    {
+        if (string.IsNullOrEmpty(email))
+        {
+            var allUsersQuery = new GetAllUsersQuery();
+            var allUsers = await userQueryService.Handle(allUsersQuery);
+            var resources = allUsers.Select(UserResourceFromEntityAssembler.ToResourceFromEntity);
+            return Ok(resources);
+        }
+
+        var query = new GetUserByEmailQuery(email);
+        var user = await userQueryService.Handle(query);
+
+        if (user == null)
+        {
+            return Ok(new List<object>());
+        }
+
+        var resource = UserResourceFromEntityAssembler.ToResourceFromEntity(user);
+        return Ok(new List<object> { resource });
     }
 
     [HttpGet("{id:int}")]

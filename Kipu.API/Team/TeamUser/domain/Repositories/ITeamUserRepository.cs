@@ -14,4 +14,6 @@ public interface ITeamUserRepository : IBaseAggregateRepository<model.Aggregates
         Task<IEnumerable<model.Aggregates.TeamUser>> FindByRole(string projectId, string role);
         
         Task<IEnumerable<model.Aggregates.TeamUser>> FindByFilter(string projectId, string? globalSearch, string? role, bool? isActive);
+
+        Task<IEnumerable<model.Aggregates.TeamUser>> FindByUserIdAsync(int userId);
 }

@@ -44,4 +44,9 @@ public class TeamUserQueryService : ITeamUserQueryService
     {
         return _teamUserRepository.FindByFilter(query.ProjectId, query.GlobalSearch, query.Role, query.IsActive);
     }
+
+    public async Task<IEnumerable<domain.model.Aggregates.TeamUser>> Handle(GetTeamUsersByUserIdQuery query)
+    {
+        return await _teamUserRepository.FindByUserIdAsync(query.UserId);
+    }
 }

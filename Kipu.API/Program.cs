@@ -14,6 +14,11 @@ using Kipu.API.Logistics.Application.Internal.QueryServices;
 using Kipu.API.Logistics.Application.Services;
 using Kipu.API.Logistics.Domain.Repositories;
 using Kipu.API.Logistics.Infrastructure.Persistence.EFC.Repositories;
+using Kipu.API.Logistics.MachineryCatalog.Application.Internal.CommandServices;
+using Kipu.API.Logistics.MachineryCatalog.Application.Internal.QueryServices;
+using Kipu.API.Logistics.MachineryCatalog.Application.Services;
+using Kipu.API.Logistics.MachineryCatalog.Domain.Repositories;
+using Kipu.API.Logistics.MachineryCatalog.Infrastructure.Persistence.EFC.Repositories;
 using Kipu.API.Projects.Application.Internal.CommandServices;
 using Kipu.API.Projects.Application.Internal.QueryServices;
 using Kipu.API.Projects.Application.Services;
@@ -37,21 +42,57 @@ using Kipu.API.Team.TeamWorker.Infraestructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.OpenApi;
+using System.Text;
+using Kipu.API.Logistics.Infrastructure.Persistence.EFC.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddMemoryCache();
 
 builder.Services.AddLocalization();
 
 // Add services to the container.
 
-builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()))
+builder.Services.AddControllers(options => 
+    {
+        options.Conventions.Add(new KebabCaseRouteNamingConvention());
+        
+        var policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+        options.Filters.Add(new AuthorizeFilter(policy));
+    })
     .AddDataAnnotationsLocalization()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+    
+var secret = builder.Configuration["AppSettings:Secret"] ?? throw new InvalidOperationException("Secret not found in appsettings.");
+var key = Encoding.ASCII.GetBytes(secret);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; 
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
 
 // Register RFC 7807 ProblemDetails payloads for centralized exception handling.
 builder.Services.AddProblemDetails(options =>
@@ -94,6 +135,18 @@ builder.Services.AddSwaggerGen(
     {
         c.EnableAnnotations();
         c.OperationFilter<AcceptLanguageHeaderParameterOperationFilter>();
+        
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Scheme = "Bearer"
+        });
+        
+        c.OperationFilter<SecurityRequirementsOperationFilter>();
+
         c.SwaggerDoc("v1",
             new OpenApiInfo
             {
@@ -152,6 +205,8 @@ builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
 builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<Kipu.API.IAM.Application.Services.IOtpService, Kipu.API.IAM.Infrastructure.Services.OtpService>();
+builder.Services.AddScoped<Kipu.API.Shared.Domain.Services.IEmailService, Kipu.API.Shared.Infrastructure.Services.EmailService>();
 
 // Projects Bounded Context Dependency Injections
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -185,7 +240,19 @@ builder.Services.AddScoped<ISupplierOfferRepository, SupplierOfferRepository>();
 builder.Services.AddScoped<ISupplierOfferCommandService, SupplierOfferCommandService>();
 builder.Services.AddScoped<ISupplierOfferQueryService, SupplierOfferQueryService>();
 
-// Team UsersBounded Context Dependency Injections 
+// Machinery Assignments Bounded Context Dependency Injections
+
+builder.Services.AddScoped<IMachineryAssignmentRepository, MachineryAssignmentRepository>();
+builder.Services.AddScoped<IMachineryAssignmentCommandService, MachineryAssignmentCommandService>();
+builder.Services.AddScoped<IMachineryAssignmentQueryService, MachineryAssignmentQueryService>();
+
+// Machinery Catalog Bounded Context Dependency Injections
+
+builder.Services.AddScoped<IMachineryCatalogRepository, MachineryCatalogRepository>();
+builder.Services.AddScoped<IMachineryCatalogCommandService, MachineryCatalogCommandService>();
+builder.Services.AddScoped<IMachineryCatalogQueryService, MachineryCatalogQueryService>();
+
+// Team Users Bounded Context Dependency Injections 
 
 builder.Services.AddScoped<ITeamUserRepository, TeamUserRepository>();
 builder.Services.AddScoped<ITeamUserCommandService, TeamUserCommandService>();
@@ -213,6 +280,11 @@ builder.Services.AddScoped<Kipu.API.Progress.Domain.Repositories.IProgressItemRe
 builder.Services.AddScoped<Kipu.API.Progress.Application.Services.IProgressCommandService, Kipu.API.Progress.Application.Internal.CommandServices.ProgressCommandService>();
 builder.Services.AddScoped<Kipu.API.Progress.Application.Services.IProgressQueryService, Kipu.API.Progress.Application.Internal.QueryServices.ProgressQueryService>();
 
+// Notifications Bounded Context
+builder.Services.AddScoped<Kipu.API.Notifications.Domain.Repositories.INotificationRepository, Kipu.API.Notifications.Infrastructure.Persistence.EFC.Repositories.NotificationRepository>();
+builder.Services.AddScoped<Kipu.API.Notifications.Application.Services.INotificationCommandService, Kipu.API.Notifications.Application.Internal.CommandServices.NotificationCommandService>();
+builder.Services.AddScoped<Kipu.API.Notifications.Application.Services.INotificationQueryService, Kipu.API.Notifications.Application.Internal.QueryServices.NotificationQueryService>();
+
 // NCR Bounded Context Dependencies Injections
 builder.Services.AddScoped<Kipu.API.NCR.Domain.Repositories.INcrRepository, Kipu.API.Ncr.Infrastructure.Persistence.EFC.Repositories.NcrRepository>();
 builder.Services.AddScoped<Kipu.API.Ncr.Application.Internal.CommandServices.NcrCommandService>();
@@ -224,8 +296,10 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
-    context.Database.Migrate();
     context.Database.EnsureCreated();
+    // Migrate() is commented out because EnsureCreated() already creates all tables.
+    // When dotnet-ef is available, uncomment to apply future migrations.
+    // context.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.
@@ -248,6 +322,9 @@ app.UseRequestLocalization(localizationOptions);
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

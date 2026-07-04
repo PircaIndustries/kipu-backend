@@ -5,6 +5,7 @@ using Kipu.API.IAM.Domain.Model.ValueObjects;
 using Kipu.API.IAM.Domain.Repositories;
 using Kipu.API.Shared.Application.Patterns;
 using Kipu.API.Shared.Domain.Repositories;
+using Kipu.API.Shared.Domain.Services;
 
 namespace Kipu.API.IAM.Application.Internal.CommandServices;
 
@@ -12,7 +13,9 @@ public class UserCommandService(
     IUserRepository userRepository,
     IHashingService hashingService,
     ITokenService tokenService,
-    IUnitOfWork unitOfWork) : IUserCommandService
+    IUnitOfWork unitOfWork,
+    IOtpService otpService,
+    IEmailService emailService) : IUserCommandService
 {
     public async Task<Result<User, string>> Handle(SignUpCommand command)
     {
@@ -49,8 +52,64 @@ public class UserCommandService(
             return new Result<(User User, string Token), string>.Failure("InvalidCredentials");
         }
 
-        var token = tokenService.GenerateToken(user);
+        var otp = otpService.GenerateOtp(user.Email, "Login");
+        await emailService.SendEmailAsync(user.Email, "Código de Verificación", $"Tu código de inicio de sesión es: {otp}. Es válido por 15 minutos.");
+
+        return new Result<(User User, string Token), string>.Success((user, "OTP_SENT"));
+    }
+
+    public async Task<Result<(User User, string Token), string>> Handle(VerifyLoginCommand command)
+    {
+        var user = await userRepository.FindByEmailAsync(command.Email);
+        if (user == null)
+        {
+            return new Result<(User User, string Token), string>.Failure("UserNotFound");
+        }
+
+        if (!otpService.ValidateOtp(command.Email, "Login", command.Code))
+        {
+            return new Result<(User User, string Token), string>.Failure("InvalidOtp");
+        }
+
+        var token = tokenService.GenerateToken(user, command.RememberMe);
         return new Result<(User User, string Token), string>.Success((user, token));
+    }
+
+    public async Task<Result<string, string>> Handle(ForgotPasswordCommand command)
+    {
+        var user = await userRepository.FindByEmailAsync(command.Email);
+        if (user == null)
+        {
+            // Do not reveal if user exists or not, just return success
+            return new Result<string, string>.Success("EmailSent");
+        }
+
+        var otp = otpService.GenerateOtp(user.Email, "ResetPassword");
+        await emailService.SendEmailAsync(user.Email, "Recuperación de Contraseña", $"Tu código para restablecer la contraseña es: {otp}. Es válido por 15 minutos.");
+
+        return new Result<string, string>.Success("EmailSent");
+    }
+
+    public async Task<Result<string, string>> Handle(ResetPasswordCommand command)
+    {
+        var user = await userRepository.FindByEmailAsync(command.Email);
+        if (user == null)
+        {
+            return new Result<string, string>.Failure("UserNotFound");
+        }
+
+        if (!otpService.ValidateOtp(command.Email, "ResetPassword", command.Code))
+        {
+            return new Result<string, string>.Failure("InvalidOtp");
+        }
+
+        user.PasswordHash = hashingService.HashPassword(command.NewPassword);
+        userRepository.Update(user);
+        await unitOfWork.CompleteAsync();
+
+        await emailService.SendEmailAsync(user.Email, "Contraseña Cambiada", "Tu contraseña ha sido cambiada exitosamente.");
+
+        return new Result<string, string>.Success("PasswordResetSuccess");
     }
 
     public async Task<Result<User, string>> Handle(UpdateUserRolesCommand command)

@@ -19,6 +19,79 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                 .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("Kipu.API.Budget.Domain.Model.Aggregates.BudgetItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("AssignedBudget")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("assigned_budget");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("details");
+
+                    b.Property<decimal>("ExecutedAmount")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("executed_amount");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int")
+                        .HasColumnName("project_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_budget_items");
+
+                    b.ToTable("budget_items", (string)null);
+                });
+
+            modelBuilder.Entity("Kipu.API.Budget.Domain.Model.Entities.BudgetTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("amount");
+
+                    b.Property<int>("BudgetItemId")
+                        .HasColumnType("int")
+                        .HasColumnName("budget_item_id");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("date");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)")
+                        .HasColumnName("description");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_budget_transactions");
+
+                    b.HasIndex("BudgetItemId")
+                        .HasDatabaseName("i_x_budget_transactions_budget_item_id");
+
+                    b.ToTable("budget_transactions", (string)null);
+                });
+
             modelBuilder.Entity("Kipu.API.Document.Domain.Model.Aggregates.Document", b =>
                 {
                     b.Property<string>("Id")
@@ -103,6 +176,74 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .HasDatabaseName("i_x_users_email");
 
                     b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MachineryAssignment", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AssignedTo")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("assigned_to");
+
+                    b.Property<string>("AssignedWorkerId")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("assigned_worker_id");
+
+                    b.Property<string>("AssignmentDetail")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("assignment_detail");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("MachineryId")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("machinery_id");
+
+                    b.Property<string>("MaintenanceHours")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)")
+                        .HasColumnName("maintenance_hours");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("ProjectId")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("project_id");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("registration_date");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_machinery_assignments");
+
+                    b.ToTable("machinery_assignments", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialCatalog", b =>
@@ -397,6 +538,82 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.ToTable("supplier_offers", (string)null);
                 });
 
+            modelBuilder.Entity("Kipu.API.Notifications.Domain.Model.Aggregates.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_read");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("message");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("payload");
+
+                    b.Property<string>("RelatedProjectId")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("related_project_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("type");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_notifications");
+
+                    b.ToTable("notifications");
+                });
+
+            modelBuilder.Entity("Kipu.API.Progress.Domain.Model.Aggregates.ProgressItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("ActualPercentage")
+                        .HasColumnType("decimal(5,2)")
+                        .HasColumnName("actual_percentage");
+
+                    b.Property<decimal>("PlannedPercentage")
+                        .HasColumnType("decimal(5,2)")
+                        .HasColumnName("planned_percentage");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int")
+                        .HasColumnName("project_id");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_progress_items");
+
+                    b.ToTable("progress_items", (string)null);
+                });
+
             modelBuilder.Entity("Kipu.API.Projects.Domain.Model.Aggregates.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -437,7 +654,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("longtext")
                         .HasColumnName("name");
 
                     b.Property<int>("Pending")
@@ -473,11 +690,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasKey("Id")
                         .HasName("p_k_projects");
 
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("i_x_projects_name");
-
-                    b.ToTable("projects", (string)null);
+                    b.ToTable("projects");
                 });
 
             modelBuilder.Entity("Kipu.API.Projects.Domain.Model.Aggregates.ProjectItem", b =>
@@ -524,7 +737,8 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
             modelBuilder.Entity("Kipu.API.Team.TeamUser.domain.model.Aggregates.TeamUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)")
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36)")
                         .HasColumnName("id");
 
                     b.Property<DateTimeOffset?>("CreatedAt")
@@ -553,6 +767,10 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id");
 
@@ -600,6 +818,41 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("team_worker", (string)null);
+                });
+
+            modelBuilder.Entity("Kipu.API.Budget.Domain.Model.Aggregates.BudgetItem", b =>
+                {
+                    b.OwnsOne("Kipu.API.Budget.Domain.Model.ValueObjects.ActivityName", "ActivityName", b1 =>
+                        {
+                            b1.Property<int>("BudgetItemId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("varchar(150)")
+                                .HasColumnName("activity_name");
+
+                            b1.HasKey("BudgetItemId");
+
+                            b1.ToTable("activity_names");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BudgetItemId");
+                        });
+
+                    b.Navigation("ActivityName")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Kipu.API.Budget.Domain.Model.Entities.BudgetTransaction", b =>
+                {
+                    b.HasOne("Kipu.API.Budget.Domain.Model.Aggregates.BudgetItem", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("BudgetItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("f_k_budget_transactions_budget_items_budget_item_id");
                 });
 
             modelBuilder.Entity("Kipu.API.Document.Domain.Model.Aggregates.Document", b =>
@@ -658,6 +911,31 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.Navigation("MaterialRequest");
                 });
 
+            modelBuilder.Entity("Kipu.API.Progress.Domain.Model.Aggregates.ProgressItem", b =>
+                {
+                    b.OwnsOne("Kipu.API.Progress.Domain.Model.ValueObjects.TaskName", "TaskName", b1 =>
+                        {
+                            b1.Property<int>("ProgressItemId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("varchar(150)")
+                                .HasColumnName("task_name");
+
+                            b1.HasKey("ProgressItemId");
+
+                            b1.ToTable("task_names");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProgressItemId");
+                        });
+
+                    b.Navigation("TaskName")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Kipu.API.Projects.Domain.Model.Aggregates.ProjectItem", b =>
                 {
                     b.HasOne("Kipu.API.Projects.Domain.Model.Aggregates.Project", "Project")
@@ -675,7 +953,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.OwnsOne("Kipu.API.Team.TeamUser.domain.model.ValueObjects.Email", "Email", b1 =>
                         {
                             b1.Property<string>("TeamUserId")
-                                .HasColumnType("varchar(255)");
+                                .HasColumnType("varchar(36)");
 
                             b1.Property<string>("Address")
                                 .IsRequired()
@@ -727,6 +1005,11 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         });
 
                     b.Navigation("Machineries");
+                });
+
+            modelBuilder.Entity("Kipu.API.Budget.Domain.Model.Aggregates.BudgetItem", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialRequest", b =>

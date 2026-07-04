@@ -6,4 +6,5 @@ public interface IDocumentCommandService
 {
     Task<Domain.Model.Aggregates.Document?> Handle(CreateDocumentCommand command);
     Task<Domain.Model.Aggregates.Document?> Handle(SignDocumentAsParticipantCommand command);
+    Task<bool> Handle(SendSignCodeCommand command);
 }
