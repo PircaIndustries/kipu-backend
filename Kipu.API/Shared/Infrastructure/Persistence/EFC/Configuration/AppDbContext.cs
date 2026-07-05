@@ -5,6 +5,7 @@ using Kipu.API.Logistics.Domain.Model.Aggregates;
 using Kipu.API.Logistics.Domain.Model.ValueObjects;
 using Kipu.API.Logistics.MachineryCatalog.Domain.Model.Aggregates;
 using Kipu.API.Logistics.Domain.Model.ValueObjects.External;
+using Kipu.API.Logistics.MaterialWaste.Domain.Model.ValueObjects;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Interceptors;
 using Kipu.API.Team.TeamUser.domain.model.Aggregates;
@@ -34,6 +35,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<MachineryAssignment> MachineryAssignments { get; set; }
     public DbSet<MachineryCatalog> MachineryCatalogs { get; set; }
     public DbSet<Kipu.API.Notifications.Domain.Model.Aggregates.Notification> Notifications { get; set; }
+    public DbSet<Kipu.API.Logistics.MaterialWaste.Domain.Model.Aggregates.MaterialWaste> MaterialWastes { get; set; }
+    public DbSet<Kipu.API.Logistics.MaterialWaste.Domain.Model.Aggregates.WasteClassification> WasteClassifications { get; set; }
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -318,7 +321,61 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<MachineryCatalog>().Property(m => m.CreatedAt).HasColumnName("created_at");
         builder.Entity<MachineryCatalog>().Property(m => m.UpdatedAt).HasColumnName("updated_at");
         builder.Entity<MachineryCatalog>().HasIndex(m => m.SerialNumber).IsUnique();
+        
+        // MATERIAL WASTE (MERMAS) ---
+        builder.Entity<Kipu.API.Logistics.MaterialWaste.Domain.Model.Aggregates.MaterialWaste>(entity =>
+        {
+            entity.ToTable("material_wastes");
+            entity.HasKey(w => w.Id);
 
+            entity.Property(w => w.Id)
+                .HasConversion(id => id.Value, value => new MaterialWasteId(value))
+                .IsRequired();
+
+            // Mapeados explícitamente como enteros nativos (int)
+            entity.Property(w => w.ProjectId)
+                .IsRequired();
+
+            entity.Property(w => w.MaterialId)
+                .IsRequired();
+
+            // Cambiado el tipo de columna a double (mapea a double/float en MySQL) en lugar de decimal
+            entity.Property(w => w.Quantity)
+                .IsRequired();
+
+            entity.Property(w => w.ClassificationType)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(w => w.Date)
+                .IsRequired()
+                .HasMaxLength(10);
+
+            entity.Property(w => w.Description)
+                .HasMaxLength(500);
+
+            entity.Property(w => w.ReportedBy)
+                .HasMaxLength(100);
+
+            entity.Property(w => w.PhotoUrl)
+                .HasMaxLength(2048);
+        });
+
+// WASTE CLASSIFICATIONS ---
+        builder.Entity<Kipu.API.Logistics.MaterialWaste.Domain.Model.Aggregates.WasteClassification>(entity =>
+        {
+            entity.ToTable("waste_classifications");
+            entity.HasKey(c => c.Id);
+
+            entity.Property(c => c.Id)
+                .HasConversion(id => id.Value, value => new WasteClassificationId(value))
+                .IsRequired();
+
+            entity.Property(c => c.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+        });
+        
         // TEAM USERS ---
         
         builder.Entity<TeamUser>().ToTable("team_user");

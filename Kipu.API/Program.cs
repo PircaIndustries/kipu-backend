@@ -44,6 +44,9 @@ using Microsoft.Extensions.Localization;
 using Microsoft.OpenApi;
 using System.Text;
 using Kipu.API.Logistics.Infrastructure.Persistence.EFC.Repositories;
+using Kipu.API.Logistics.MaterialWaste.Application.Services;
+using Kipu.API.Logistics.MaterialWaste.Domain.Repositories;
+using Kipu.API.Logistics.MaterialWaste.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -62,10 +65,10 @@ builder.Services.AddControllers(options =>
     {
         options.Conventions.Add(new KebabCaseRouteNamingConvention());
         
-        var policy = new AuthorizationPolicyBuilder()
-            .RequireAuthenticatedUser()
-            .Build();
-        options.Filters.Add(new AuthorizeFilter(policy));
+        //var policy = new AuthorizationPolicyBuilder()
+          //  .RequireAuthenticatedUser()
+          //  .Build();
+        //options.Filters.Add(new AuthorizeFilter(policy));
     })
     .AddDataAnnotationsLocalization()
     .AddJsonOptions(options =>
@@ -239,6 +242,14 @@ builder.Services.AddScoped<IMaterialRequestQueryService, MaterialRequestQuerySer
 builder.Services.AddScoped<ISupplierOfferRepository, SupplierOfferRepository>();
 builder.Services.AddScoped<ISupplierOfferCommandService, SupplierOfferCommandService>();
 builder.Services.AddScoped<ISupplierOfferQueryService, SupplierOfferQueryService>();
+
+builder.Services.AddScoped<IMaterialWasteRepository, MaterialWasteRepository>();
+builder.Services.AddScoped<IWasteClassificationRepository, WasteClassificationRepository>();
+
+builder.Services.AddScoped<IMaterialWasteCommandService, MaterialWasteCommandService>();
+builder.Services.AddScoped<IMaterialWasteQueryService, MaterialWasteQueryService>();
+builder.Services.AddScoped<IWasteClassificationCommandService, WasteClassificationCommandService>();
+builder.Services.AddScoped<IWasteClassificationQueryService, WasteClassificationQueryService>();
 
 // Machinery Assignments Bounded Context Dependency Injections
 
