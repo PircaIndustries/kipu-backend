@@ -1,10 +1,12 @@
 using System.Net.Mime;
+using System.Security.Claims;
 using Kipu.API.Logistics.Application.Services;
 using Kipu.API.Logistics.Domain.Model.Queries;
 using Kipu.API.Logistics.Domain.Model.ValueObjects;
 using Kipu.API.Logistics.Interfaces.REST.Resources.MaterialRequest;
 using Kipu.API.Logistics.Interfaces.REST.Transform.MaterialRequest;
 using Kipu.API.Resources;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,6 +24,7 @@ public class MaterialRequestController(
     ILogger<MaterialRequestController> logger) : ControllerBase
 {
     [HttpPost]
+    [Authorize(Roles = "Gestor Operativo, Administrador")]
     [SwaggerOperation(
         Summary = "Creates a Material Request",
         Description = "Creates a material request with the given deadline, priority, delivery location, budget line, purpose and notes",
@@ -33,6 +36,7 @@ public class MaterialRequestController(
         [FromBody] CreateMaterialRequestResource resource,
         CancellationToken cancellationToken)
     {
+        logger.LogInformation("[MaterialRequestController] CreateMaterialRequest called, ProjectId={ProjectId}, RequestedBy={RequestedBy}", resource.ProjectId, resource.RequestedBy);
         try
         {
             var command = CreateMaterialRequestCommandFromResourceAssembler.ToCommandFromResource(resource);
@@ -107,6 +111,23 @@ public class MaterialRequestController(
         return Ok(resources);
     }
 
+    [HttpGet("project/{projectId}")]
+    [SwaggerOperation(
+        Summary = "Gets Material Requests by project",
+        Description = "Gets all material requests for a given project ID",
+        OperationId = "GetMaterialRequestsByProject")]
+    [SwaggerResponse(200, "The material requests were found", typeof(IEnumerable<MaterialRequestResource>))]
+    public async Task<ActionResult> GetMaterialRequestsByProject(int projectId, CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation("[MaterialRequestController] GetMaterialRequestsByProject called with projectId={ProjectId}", projectId);
+        var query = new GetAllMaterialRequestsByProjectIdQuery(projectId);
+        var result = await materialRequestQueryService.Handle(query, cancellationToken);
+        var resultList = result.ToList();
+        logger.LogInformation("[MaterialRequestController] GetMaterialRequestsByProject returned {Count} requests", resultList.Count);
+        var resources = resultList.Select(MaterialRequestResourceFromEntityAssembler.ToResourceFromEntity);
+        return Ok(resources);
+    }
+
     [HttpPut("{id}")]
     [SwaggerOperation(
         Summary = "Updates a Material Request",
@@ -150,6 +171,7 @@ public class MaterialRequestController(
         OperationId = "UpdatePartialMaterialRequest")]
     [SwaggerResponse(200, "The material request was updated", typeof(MaterialRequestResource))]
     [SwaggerResponse(400, "The request payload is invalid", typeof(string))]
+    [SwaggerResponse(403, "The user is not authorized to modify this request", typeof(string))]
     [SwaggerResponse(404, "The material request was not found", typeof(string))]
     [SwaggerResponse(409, "The material request cannot be updated due to its status", typeof(string))]
     [SwaggerResponse(500, "Unexpected server error", typeof(ProblemDetails))]
@@ -159,6 +181,26 @@ public class MaterialRequestController(
     {
         try
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userRoleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+            var isLogistics = userRoleClaim == "Logística y Administración" || userRoleClaim == "Administrador";
+
+            var getQuery = new GetMaterialRequestByIdQuery(id);
+            var existingRequest = await materialRequestQueryService.Handle(getQuery, cancellationToken);
+            if (existingRequest == null)
+                return NotFound(localizer["MaterialRequestNotFound"].Value);
+
+            if (resource.RequestStatus != null)
+            {
+                if (!isLogistics)
+                    return Forbid();
+            }
+            else
+            {
+                if (userIdClaim == null || existingRequest.RequestedBy.ToString() != userIdClaim)
+                    return Forbid();
+            }
+
             var command = UpdatePartialMaterialRequestCommandFromResourceAssembler.ToCommandFromResource(id, resource);
             var result = await materialRequestCommandService.Handle(command, cancellationToken);
             return ActionResultFromUpdatePartialMaterialRequestAssembler.ToActionResultFromUpdatePartialMaterialRequestResult(

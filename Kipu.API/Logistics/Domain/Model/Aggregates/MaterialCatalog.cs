@@ -26,6 +26,18 @@ public partial class MaterialCatalog
         MeasureUnit = command.MeasureUnit;
     }
 
+    public void UpdatePartial(UpdateMaterialCatalogPartialCommand command)
+    {
+        if (command.Name is not null)
+            Name = command.Name;
+
+        if (command.CategoryId is not null)
+            CategoryId = command.CategoryId;
+
+        if (command.MeasureUnit is not null)
+            MeasureUnit = command.MeasureUnit.Value;
+    }
+
     public int Id { get; private set; }
     public Name Name { get; private set; }
     public CategoryId CategoryId { get; private set; }

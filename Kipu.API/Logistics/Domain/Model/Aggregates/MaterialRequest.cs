@@ -22,6 +22,7 @@ public class MaterialRequest
         Purpose = command.Purpose;
         AdditionalNotes = command.AdditionalNotes;
         RequestedBy = command.RequestedBy;
+        ProjectId = command.ProjectId;
         Items = command.Items
             .Select(i => new MaterialRequestItem(i))
             .ToList();
@@ -100,5 +101,6 @@ public class MaterialRequest
     public String Purpose { get; private set; }
     public String AdditionalNotes { get; private set; }
     public UserId RequestedBy { get; private set; }
+    public ProjectId? ProjectId { get; private set; }
     public ICollection<MaterialRequestItem> Items { get; private set; }
 }

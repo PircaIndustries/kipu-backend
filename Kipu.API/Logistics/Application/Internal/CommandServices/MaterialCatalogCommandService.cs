@@ -142,6 +142,59 @@ public class MaterialCatalogCommandService(
         }
     }
 
+    public async Task<Result<MaterialCatalog, UpdatePartialMaterialCatalogError>> Handle(
+        UpdateMaterialCatalogPartialCommand command, CancellationToken cancellationToken = default)
+    {
+        if (command.CategoryId is not null)
+        {
+            var categoryItem = await materialCategoryRepository.FindByIdAsync(command.CategoryId.Value, cancellationToken);
+            if (categoryItem == null)
+            {
+                logger.LogWarning("The material catalog cannot be updated. The category {CategoryId} does not exist.",
+                    command.CategoryId.Value);
+                return new Result<MaterialCatalog, UpdatePartialMaterialCatalogError>.Failure(
+                    UpdatePartialMaterialCatalogError.CategoryNotFound);
+            }
+        }
+        try
+        {
+            var materialCatalog = await materialCatalogRepository.FindByIdAsync(command.Id, cancellationToken);
+            if (materialCatalog is null)
+            {
+                logger.LogWarning("Material catalog with ID {Id} not found", command.Id);
+                return new Result<MaterialCatalog, UpdatePartialMaterialCatalogError>.Failure(
+                    UpdatePartialMaterialCatalogError.MaterialCatalogNotFound);
+            }
+            materialCatalog.UpdatePartial(command);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return new Result<MaterialCatalog, UpdatePartialMaterialCatalogError>.Success(materialCatalog);
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid arguments when updating material catalog with ID {Id}", command.Id);
+            return new Result<MaterialCatalog, UpdatePartialMaterialCatalogError>.Failure(
+                UpdatePartialMaterialCatalogError.UnexpectedError);
+        }
+        catch (DbUpdateException ex) when (IsDuplicateKeyViolation(ex))
+        {
+            logger.LogWarning(ex, "Duplicate key violation updating material catalog with ID {Id}", command.Id);
+            return new Result<MaterialCatalog, UpdatePartialMaterialCatalogError>.Failure(
+                UpdatePartialMaterialCatalogError.DuplicatedMaterialCatalog);
+        }
+        catch (DbUpdateException ex)
+        {
+            logger.LogError(ex, "Database update failed updating material catalog with ID {Id}", command.Id);
+            return new Result<MaterialCatalog, UpdatePartialMaterialCatalogError>.Failure(
+                UpdatePartialMaterialCatalogError.UnexpectedError);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error updating material catalog with ID {Id}", command.Id);
+            return new Result<MaterialCatalog, UpdatePartialMaterialCatalogError>.Failure(
+                UpdatePartialMaterialCatalogError.UnexpectedError);
+        }
+    }
+
     private static bool IsDuplicateKeyViolation(DbUpdateException exception)
     {
         for (Exception? current = exception; current is not null; current = current.InnerException)

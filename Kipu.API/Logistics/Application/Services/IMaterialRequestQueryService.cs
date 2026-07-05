@@ -9,4 +9,5 @@ public interface IMaterialRequestQueryService
     Task<MaterialRequest?> Handle(GetMaterialRequestByIdQuery query, CancellationToken cancellationToken = default);
     Task<IEnumerable<MaterialRequest>> Handle(GetAllMaterialRequestQuery query, CancellationToken cancellationToken = default);
     Task<IEnumerable<MaterialRequest>> Handle(GetAllMaterialRequestByRequestStatusQuery query, CancellationToken cancellationToken = default);
+    Task<IEnumerable<MaterialRequest>> Handle(GetAllMaterialRequestsByProjectIdQuery query, CancellationToken cancellationToken = default);
 }

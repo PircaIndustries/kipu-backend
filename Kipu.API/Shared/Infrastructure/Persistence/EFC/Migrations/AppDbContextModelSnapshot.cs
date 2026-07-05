@@ -175,7 +175,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .IsUnique()
                         .HasDatabaseName("i_x_users_email");
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MachineryAssignment", b =>
@@ -274,7 +274,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .IsUnique()
                         .HasDatabaseName("i_x_material_catalogs_name");
 
-                    b.ToTable("material_catalogs", (string)null);
+                    b.ToTable("material_catalogs");
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialCategory", b =>
@@ -312,7 +312,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .IsUnique()
                         .HasDatabaseName("i_x_material_categories_name");
 
-                    b.ToTable("material_categories", (string)null);
+                    b.ToTable("material_categories");
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialInventory", b =>
@@ -346,7 +346,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasKey("Id")
                         .HasName("p_k_material_inventories");
 
-                    b.ToTable("material_inventories", (string)null);
+                    b.ToTable("material_inventories");
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialRequest", b =>
@@ -376,6 +376,10 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .HasColumnType("varchar(500)")
                         .HasColumnName("delivery_location");
 
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int")
+                        .HasColumnName("project_id");
+
                     b.Property<string>("Purpose")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -400,7 +404,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasIndex("RequestStatus")
                         .HasDatabaseName("i_x_material_requests_request_status");
 
-                    b.ToTable("material_requests", (string)null);
+                    b.ToTable("material_requests");
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialRequestItem", b =>
@@ -417,10 +421,6 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.Property<int>("MaterialRequestId")
                         .HasColumnType("int")
                         .HasColumnName("material_request_id");
-
-                    b.Property<int?>("MaterialRequestId1")
-                        .HasColumnType("int")
-                        .HasColumnName("material_request_id1");
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(18,2)")
@@ -440,10 +440,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasIndex("MaterialRequestId")
                         .HasDatabaseName("i_x_material_request_items_material_request_id");
 
-                    b.HasIndex("MaterialRequestId1")
-                        .HasDatabaseName("i_x_material_request_items_material_request_id1");
-
-                    b.ToTable("material_request_items", (string)null);
+                    b.ToTable("material_request_items");
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.Supplier", b =>
@@ -509,7 +506,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                         .IsUnique()
                         .HasDatabaseName("i_x_suppliers_ruc");
 
-                    b.ToTable("suppliers", (string)null);
+                    b.ToTable("suppliers");
                 });
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.SupplierOffer", b =>
@@ -535,7 +532,109 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasIndex("SupplierId", "MaterialCatalogId")
                         .IsUnique();
 
-                    b.ToTable("supplier_offers", (string)null);
+                    b.ToTable("supplier_offers");
+                });
+
+            modelBuilder.Entity("Kipu.API.Logistics.MachineryCatalog.Domain.Model.Aggregates.MachineryCatalog", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36)")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AcquisitionDate")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("acquisition_date");
+
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("brand");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("model");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("SerialNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("serial_number");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_machinery_catalogs");
+
+                    b.HasIndex("SerialNumber")
+                        .IsUnique();
+
+                    b.ToTable("machinery_catalog", (string)null);
+                });
+
+            modelBuilder.Entity("Kipu.API.NCR.Domain.Model.Aggregates.Ncr", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int")
+                        .HasColumnName("project_id");
+
+                    b.Property<string>("Severity")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("severity");
+
+                    b.Property<string>("Speciality")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("speciality");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("p_k_ncrs");
+
+                    b.ToTable("ncrs", (string)null);
                 });
 
             modelBuilder.Entity("Kipu.API.Notifications.Domain.Model.Aggregates.Notification", b =>
@@ -731,7 +830,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                     b.HasIndex("ProjectId")
                         .HasDatabaseName("i_x_project_items_project_id");
 
-                    b.ToTable("project_items", (string)null);
+                    b.ToTable("project_items");
                 });
 
             modelBuilder.Entity("Kipu.API.Team.TeamUser.domain.model.Aggregates.TeamUser", b =>
@@ -896,17 +995,12 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
 
             modelBuilder.Entity("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialRequestItem", b =>
                 {
-                    b.HasOne("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialRequest", null)
+                    b.HasOne("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialRequest", "MaterialRequest")
                         .WithMany("Items")
                         .HasForeignKey("MaterialRequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("f_k_material_request_items_material_requests_material_request_id");
-
-                    b.HasOne("Kipu.API.Logistics.Domain.Model.Aggregates.MaterialRequest", "MaterialRequest")
-                        .WithMany()
-                        .HasForeignKey("MaterialRequestId1")
-                        .HasConstraintName("f_k_material_request_items_material_requests_material_request_id1");
 
                     b.Navigation("MaterialRequest");
                 });
@@ -962,7 +1056,7 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
 
                             b1.HasKey("TeamUserId");
 
-                            b1.ToTable("team_user", (string)null);
+                            b1.ToTable("team_user");
 
                             b1.WithOwner()
                                 .HasForeignKey("TeamUserId");
@@ -1021,52 +1115,6 @@ namespace Kipu.API.Shared.Infrastructure.Persistence.EFC.Migrations
                 {
                     b.Navigation("Items");
                 });
-            modelBuilder.Entity("Kipu.API.NCR.Domain.Model.Aggregates.Ncr", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int")
-                    .HasColumnName("id");
-
-                b.Property<DateTimeOffset?>("CreatedAt")
-                    .HasColumnType("datetime(6)")
-                    .HasColumnName("created_at");
-
-                b.Property<string>("Description")
-                    .IsRequired()
-                    .HasMaxLength(1000)
-                    .HasColumnType("varchar(1000)")
-                    .HasColumnName("description");
-
-                b.Property<int>("ProjectId")
-                    .HasColumnType("int")
-                    .HasColumnName("project_id");
-
-                b.Property<int>("Severity")
-                    .HasColumnType("int")
-                    .HasColumnName("severity");
-
-                b.Property<string>("Speciality")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("varchar(50)")
-                    .HasColumnName("speciality");
-
-                b.Property<string>("Title")
-                    .IsRequired()
-                    .HasMaxLength(150)
-                    .HasColumnType("varchar(150)")
-                    .HasColumnName("title");
-
-                b.Property<DateTimeOffset?>("UpdatedAt")
-                    .HasColumnType("datetime(6)")
-                    .HasColumnName("updated_at");
-
-                b.HasKey("Id")
-                    .HasName("pk_ncrs");
-
-                b.ToTable("ncrs", (string)null);
-            });
 #pragma warning restore 612, 618
         }
     }

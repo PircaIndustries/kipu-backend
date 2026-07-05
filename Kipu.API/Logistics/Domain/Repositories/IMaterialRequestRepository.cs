@@ -9,4 +9,5 @@ public interface IMaterialRequestRepository : IBaseRepository<MaterialRequest>
     Task<IEnumerable<MaterialRequest>> FindByRequestStatus(RequestStatus requestStatus, CancellationToken cancellationToken = default);
     Task<MaterialRequest?> FindByIdWithItemsAsync(int id, CancellationToken cancellationToken = default);
     Task<IEnumerable<MaterialRequest>> ListWithItemsAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<MaterialRequest>> FindByProjectIdAsync(int projectId, CancellationToken cancellationToken = default);
 }
