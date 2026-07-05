@@ -237,6 +237,13 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
                 .HasConversion(u => u.Value, v => new UserId(v))
                 .IsRequired();
 
+            entity.Property(r => r.ProjectId)
+                .HasConversion(
+                    p => p == null ? (int?)null : p.Value,
+                    v => v.HasValue ? new ProjectId(v.Value) : null
+                )
+                .HasColumnName("project_id");
+
             entity.HasIndex(r => r.RequestStatus);
         });
         // MaterialRequestItem mapping

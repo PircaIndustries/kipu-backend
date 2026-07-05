@@ -2,6 +2,8 @@ using Kipu.API.Logistics.Application.Errors;
 using Kipu.API.Logistics.Application.Services;
 using Kipu.API.Logistics.Domain.Model.Aggregates;
 using Kipu.API.Logistics.Domain.Model.Commands;
+using Kipu.API.Logistics.Domain.Model.ValueObjects;
+using Kipu.API.Logistics.Domain.Model.ValueObjects.External;
 using Kipu.API.Logistics.Domain.Repositories;
 using Kipu.API.Shared.Application.Patterns;
 using Kipu.API.Shared.Domain.Repositories;
@@ -11,6 +13,7 @@ namespace Kipu.API.Logistics.Application.Internal.CommandServices;
 
 public class MaterialRequestCommandService(
     IMaterialRequestRepository materialRequestRepository,
+    IMaterialInventoryRepository materialInventoryRepository,
     IUnitOfWork unitOfWork,
     ILogger<MaterialRequestCommandService> logger)
     : IMaterialRequestCommandService
@@ -126,6 +129,37 @@ public class MaterialRequestCommandService(
                 logger.LogWarning(ex, "Attempted to patch refused request with ID {Id}", command.Id);
                 return new Result<MaterialRequest, UpdatePartialMaterialRequestError>.Failure(
                     UpdatePartialMaterialRequestError.RequestAlreadyRefused);
+            }
+
+            if (request.RequestStatus == RequestStatus.Accepted && request.ProjectId != null)
+            {
+                foreach (var item in request.Items)
+                {
+                    var existingInventory = await materialInventoryRepository
+                        .FindByMaterialCatalogIdAndProjectIdAsync(item.MaterialCatalogId.Value, request.ProjectId.Value, cancellationToken);
+
+                    if (existingInventory != null)
+                    {
+                        var newStock = new Quantity(existingInventory.CurrentStock.Value + (int)item.Quantity);
+                        existingInventory.Update(new UpdateMaterialInventoryCommand(
+                            existingInventory.Id,
+                            existingInventory.ProjectId,
+                            existingInventory.MaterialCatalogId,
+                            newStock,
+                            existingInventory.MinimumStock,
+                            existingInventory.Location));
+                    }
+                    else
+                    {
+                        var newInventory = new MaterialInventory(new CreateMaterialInventoryCommand(
+                            request.ProjectId,
+                            item.MaterialCatalogId,
+                            new Quantity((int)item.Quantity),
+                            new Quantity(0),
+                            new WarehouseLocation(request.DeliveryLocation)));
+                        await materialInventoryRepository.AddAsync(newInventory, cancellationToken);
+                    }
+                }
             }
 
             await unitOfWork.CompleteAsync(cancellationToken);

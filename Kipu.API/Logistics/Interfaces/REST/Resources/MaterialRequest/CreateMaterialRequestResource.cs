@@ -34,6 +34,9 @@ public record CreateMaterialRequestResource(
     [SwaggerParameter(Description = "The ID of the user who requested")]
     int RequestedBy,
 
+    [SwaggerParameter(Description = "The project ID")]
+    int? ProjectId,
+
     [Required]
     [MinLength(1)]
     [SwaggerParameter(Description = "The items to include in the request")]

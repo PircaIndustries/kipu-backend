@@ -23,4 +23,9 @@ public class MaterialRequestQueryService(IMaterialRequestRepository materialRequ
     {
         return await materialRequestRepository.FindByRequestStatus(query.RequestStatus, cancellationToken);
     }
+
+    public async Task<IEnumerable<MaterialRequest>> Handle(GetAllMaterialRequestsByProjectIdQuery query, CancellationToken cancellationToken = default)
+    {
+        return await materialRequestRepository.FindByProjectIdAsync(query.ProjectId, cancellationToken);
+    }
 }

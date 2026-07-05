@@ -11,4 +11,5 @@ public record CreateMaterialRequestCommand(
     string Purpose,
     string AdditionalNotes,
     UserId RequestedBy,
+    ProjectId? ProjectId,
     List<MaterialRequestItemCommand> Items);

@@ -16,6 +16,7 @@ public static class CreateMaterialRequestCommandFromResourceAssembler
             resource.Purpose,
             resource.AdditionalNotes ?? string.Empty,
             new UserId(resource.RequestedBy),
+            resource.ProjectId.HasValue ? new ProjectId(resource.ProjectId.Value) : null,
             resource.Items.Select(i => new MaterialRequestItemCommand(
                 new MaterialCatalogId(i.MaterialCatalogId),
                 new SupplierId(i.SupplierId),
