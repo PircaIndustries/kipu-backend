@@ -27,4 +27,25 @@ public class MachineryCatalogCommandService(
             return null;
         }
     }
+
+    public async Task<Domain.Model.Aggregates.MachineryCatalog?> Handle(UpdateMachineryCatalogPartialCommand command, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var catalog = await repository.FindByIdAsync(command.Id, cancellationToken);
+            if (catalog is null)
+            {
+                logger.LogWarning("Machinery catalog with ID {Id} not found", command.Id);
+                return null;
+            }
+            catalog.UpdatePartial(command);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return catalog;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error updating machinery catalog {Id}", command.Id);
+            return null;
+        }
+    }
 }

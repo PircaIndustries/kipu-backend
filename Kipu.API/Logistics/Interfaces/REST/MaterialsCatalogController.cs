@@ -11,6 +11,7 @@ using Kipu.API.Shared.Application.Patterns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
 namespace Kipu.API.Logistics.Interfaces.REST;
 
 [ApiController]
@@ -30,6 +31,7 @@ public class MaterialsCatalogController(
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created material catalog</returns>
     [HttpPost]
+    [Authorize(Roles = "Logística y Administración, Administrador")]
     [SwaggerOperation(
         Summary = "Creates a Material Catalog",
         Description = "Creates a Material Catalog with a given Name, CategoryId and MeasureUnit",
@@ -116,6 +118,7 @@ public class MaterialsCatalogController(
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The updated material catalog</returns>
     [HttpPut("{id}")]
+    [Authorize(Roles = "Logística y Administración, Administrador")]
     [SwaggerOperation(
         Summary = "Updates a Material Catalog",
         Description = "Updates an existing material catalog with the given ID",
@@ -157,6 +160,7 @@ public class MaterialsCatalogController(
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>No content if successful</returns>
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Logística y Administración, Administrador")]
     [SwaggerOperation(
         Summary = "Deletes a Material Catalog",
         Description = "Deletes an existing material catalog with the given ID",
@@ -189,6 +193,49 @@ public class MaterialsCatalogController(
             return Problem(
                 title: localizer["UnexpectedServerError"].Value,
                 detail: localizer["UnexpectedErrorDeletingMaterialCatalog"].Value,
+                statusCode: 500);
+        }
+    }
+
+    /// <summary>
+    /// Partially updates a material catalog entry
+    /// </summary>
+    /// <param name="id">The material catalog identifier</param>
+    /// <param name="resource">The partial updated material catalog data</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The updated material catalog</returns>
+    [HttpPatch("{id}")]
+    [Authorize(Roles = "Logística y Administración, Administrador")]
+    [SwaggerOperation(
+        Summary = "Partially updates a Material Catalog",
+        Description = "Partially updates an existing material catalog with the given ID",
+        OperationId = "PatchMaterialCatalog")]
+    [SwaggerResponse(200, "The material catalog was updated", typeof(MaterialCatalogResource))]
+    [SwaggerResponse(400, "The request payload is invalid", typeof(string))]
+    [SwaggerResponse(404, "The material catalog was not found", typeof(string))]
+    [SwaggerResponse(500, "Unexpected server error", typeof(ProblemDetails))]
+    public async Task<ActionResult> PatchMaterialCatalog(int id,
+        [FromBody] UpdatePartialMaterialCatalogResource resource,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var command = UpdatePartialMaterialCatalogCommandFromResourceAssembler.ToCommandFromResource(id, resource);
+            var result = await materialCatalogCommandService.Handle(command, cancellationToken);
+            return ActionResultFromUpdatePartialMaterialCatalogAssembler.ToActionResultFromUpdatePartialMaterialCatalogResult(
+                result, this, localizer);
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Validation failed while partially updating material catalog with id {Id}", id);
+            return BadRequest(localizer["InvalidMaterialCatalogRequest"].Value);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while partially updating material catalog with id {Id}", id);
+            return Problem(
+                title: localizer["UnexpectedServerError"].Value,
+                detail: localizer["UnexpectedErrorUpdatingMaterialCatalog"].Value,
                 statusCode: 500);
         }
     }

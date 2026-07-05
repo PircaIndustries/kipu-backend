@@ -31,5 +31,8 @@ public record MaterialRequestResource(
     [SwaggerParameter(Description = "The ID of the user who requested")]
     int RequestedBy,
 
+    [SwaggerParameter(Description = "The project ID")]
+    int? ProjectId,
+
     [SwaggerParameter(Description = "The items in the request")]
     List<MaterialRequestItemResource> Items);

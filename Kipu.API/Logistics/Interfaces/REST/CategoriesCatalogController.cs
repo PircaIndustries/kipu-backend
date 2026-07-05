@@ -11,6 +11,7 @@ using Kipu.API.Shared.Application.Patterns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Kipu.API.Logistics.Interfaces.REST;
 
@@ -31,6 +32,7 @@ public class CategoriesCatalogController(
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created material category</returns>
     [HttpPost]
+    [Authorize(Roles = "Logística y Administración, Administrador")]
     [SwaggerOperation(
         Summary = "Creates a Material Category",
         Description = "Creates a Material Category with a given Name, Description and IsActive status",
@@ -117,6 +119,7 @@ public class CategoriesCatalogController(
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The updated material category</returns>
     [HttpPut("{id}")]
+    [Authorize(Roles = "Logística y Administración, Administrador")]
     [SwaggerOperation(
         Summary = "Updates a Material Category",
         Description = "Updates an existing material category with the given ID",
@@ -158,6 +161,7 @@ public class CategoriesCatalogController(
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>No content if successful</returns>
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Logística y Administración, Administrador")]
     [SwaggerOperation(
         Summary = "Deletes a Material Category",
         Description = "Deletes an existing material category with the given ID",

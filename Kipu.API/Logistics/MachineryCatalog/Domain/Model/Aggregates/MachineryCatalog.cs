@@ -26,6 +26,24 @@ public class MachineryCatalog : IAuditableEntity
         CreatedAt = DateTimeOffset.UtcNow;
     }
 
+    public void UpdatePartial(UpdateMachineryCatalogPartialCommand command)
+    {
+        if (command.Name is not null)
+            Name = command.Name;
+
+        if (command.Brand is not null)
+            Brand = command.Brand;
+
+        if (command.Model is not null)
+            Model = command.Model;
+
+        if (command.SerialNumber is not null)
+            SerialNumber = command.SerialNumber;
+
+        if (command.AcquisitionDate is not null)
+            AcquisitionDate = command.AcquisitionDate;
+    }
+
     public string Id { get; private set; }
     public string Name { get; private set; }
     public string Brand { get; private set; }
