@@ -65,10 +65,10 @@ builder.Services.AddControllers(options =>
     {
         options.Conventions.Add(new KebabCaseRouteNamingConvention());
         
-        //var policy = new AuthorizationPolicyBuilder()
-          //  .RequireAuthenticatedUser()
-          //  .Build();
-        //options.Filters.Add(new AuthorizeFilter(policy));
+        var policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+        options.Filters.Add(new AuthorizeFilter(policy));
     })
     .AddDataAnnotationsLocalization()
     .AddJsonOptions(options =>
