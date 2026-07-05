@@ -12,6 +12,7 @@ using Kipu.API.Shared.Application.Patterns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Kipu.API.Logistics.Interfaces.REST;
 
@@ -32,6 +33,7 @@ public class SupplierController(
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created supplier</returns>
     [HttpPost]
+    [Authorize(Roles = "Logística y Administración, Administrador")]
     [SwaggerOperation(
         Summary = "Creates a Supplier",
         Description = "Creates a supplier with the given RUC, business name, contact, phone, email and payment terms",
@@ -164,6 +166,7 @@ public class SupplierController(
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The updated supplier</returns>
     [HttpPut("{id}")]
+    [Authorize(Roles = "Logística y Administración, Administrador")]
     [SwaggerOperation(
         Summary = "Updates a Supplier",
         Description = "Updates an existing supplier with the given ID. All fields are required (PUT semantics).",
@@ -205,6 +208,7 @@ public class SupplierController(
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>No content if deleted</returns>
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Logística y Administración, Administrador")]
     [SwaggerOperation(
         Summary = "Deletes a Supplier",
         Description = "Deletes an existing supplier with the given ID.",
@@ -239,6 +243,7 @@ public class SupplierController(
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The updated Partial supplier</returns>
     [HttpPatch("{id}")]
+    [Authorize(Roles = "Logística y Administración, Administrador")]
     [SwaggerOperation(
         Summary = "Updates Partial a Supplier",
         Description = "Updates Partial an existing supplier with the given ID. All fields are required (PUT semantics).",

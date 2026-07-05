@@ -16,6 +16,7 @@ public static class MaterialRequestResourceFromEntityAssembler
             entity.Purpose,
             entity.AdditionalNotes,
             entity.RequestedBy.Value,
+            entity.ProjectId?.Value,
             entity.Items.Select(i => new MaterialRequestItemResource(
                 i.Id,
                 i.MaterialCatalogId.Value,

@@ -109,6 +109,20 @@ public class MaterialInventoryController(
         return Ok(resources);
     }
 
+    [HttpGet("project/{projectId}")]
+    [SwaggerOperation(
+        Summary = "Gets Material Inventory by project",
+        Description = "Gets all material inventory for a given project ID",
+        OperationId = "GetMaterialInventoryByProject")]
+    [SwaggerResponse(200, "The material inventory were found", typeof(IEnumerable<MaterialInventoryResource>))]
+    public async Task<ActionResult> GetMaterialInventoryByProject(int projectId, CancellationToken cancellationToken = default)
+    {
+        var query = new GetAllMaterialInventoryByProjectIdQuery(projectId);
+        var result = await materialInventoryQueryService.Handle(query, cancellationToken);
+        var resources = result.Select(MaterialInventoryResourceFromEntityAssembler.ToResourceFromEntity);
+        return Ok(resources);
+    }
+
     /// <summary>
     /// Updates a material inventory
     /// </summary>

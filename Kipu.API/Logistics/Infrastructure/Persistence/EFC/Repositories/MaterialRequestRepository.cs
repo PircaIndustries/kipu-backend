@@ -3,6 +3,7 @@ using Kipu.API.Logistics.Domain.Model.ValueObjects;
 using Kipu.API.Logistics.Domain.Repositories;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using Kipu.API.Shared.Infrastructure.Persistence.EFC.Repositories;
+using Kipu.API.Logistics.Domain.Model.ValueObjects.External;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kipu.API.Logistics.Infrastructure.Persistence.EFC.Repositories;
@@ -30,6 +31,15 @@ public class MaterialRequestRepository(AppDbContext context)
     {
         return await Context.Set<MaterialRequest>()
             .Include(r => r.Items)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<MaterialRequest>> FindByProjectIdAsync(int projectId, CancellationToken cancellationToken = default)
+    {
+        var searchProjectId = new ProjectId(projectId);
+        return await Context.Set<MaterialRequest>()
+            .Include(r => r.Items)
+            .Where(r => r.ProjectId != null && r.ProjectId == searchProjectId)
             .ToListAsync(cancellationToken);
     }
 }
