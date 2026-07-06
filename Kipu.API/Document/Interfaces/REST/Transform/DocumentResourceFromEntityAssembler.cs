@@ -8,7 +8,8 @@ public static class DocumentResourceFromEntityAssembler
     {
         var participants = entity.Participants.Select(p => new DocumentParticipantResource(
             p.TeamUserId,
-            p.FullName
+            p.FullName,
+            p.SignedAt
         )).ToList();
 
         return new DocumentResource(

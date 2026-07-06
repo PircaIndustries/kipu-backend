@@ -12,11 +12,11 @@ public class DocumentRepository : BaseAggregateRepository<Domain.Model.Aggregate
     {
     }
 
-    public new async Task<Domain.Model.Aggregates.Document?> FindById(DocumentId id)
+    public new async Task<Domain.Model.Aggregates.Document?> FindByIdAsync(DocumentId id, CancellationToken cancellationToken = default)
     {
         return await Context.Set<Domain.Model.Aggregates.Document>()
             .Include(d => d.Participants) 
-            .FirstOrDefaultAsync(d => d.Id == id);
+            .FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<Domain.Model.Aggregates.Document>> FindPendingByProjectIdAndUserIdAsync(string projectId, string teamUserId)
