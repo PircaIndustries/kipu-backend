@@ -35,4 +35,17 @@ public class ProgressCommandService(IProgressItemRepository progressItemReposito
         }
         catch (Exception ex) { return new Result<ProgressItem, string>.Failure(ex.Message); }
     }
+
+    public async Task<Result<bool, string>> HandleDeleteProgressItemAsync(int id)
+    {
+        try
+        {
+            var item = await progressItemRepository.FindByIdAsync(id);
+            if (item == null) return new Result<bool, string>.Failure($"Progress item {id} not found.");
+            progressItemRepository.Remove(item);
+            await unitOfWork.CompleteAsync();
+            return new Result<bool, string>.Success(true);
+        }
+        catch (Exception ex) { return new Result<bool, string>.Failure(ex.Message); }
+    }
 }

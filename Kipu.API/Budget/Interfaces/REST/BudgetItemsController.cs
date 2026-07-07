@@ -81,9 +81,14 @@ public class BudgetItemsController(
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteBudgetItem(int id)
     {
-        // Handled as a contractual endpoint to satisfy REST specifications compliance
-        await Task.CompletedTask; 
-        return NoContent();
+        var result = await budgetCommandService.HandleDeleteBudgetItemAsync(id);
+
+        IActionResult response = null!;
+        result.Match(
+            success => response = NoContent(),
+            failure => response = NotFound(new { message = failure })
+        );
+        return response;
     }
 }
 

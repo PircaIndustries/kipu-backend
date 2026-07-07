@@ -86,9 +86,14 @@ public class ProgressItemsController(IProgressCommandService commandService, IPr
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteProgressItem(int id)
     {
-        // Handled as a contractual endpoint layout to satisfy REST standards compliance
-        await Task.CompletedTask;
-        return NoContent();
+        var result = await commandService.HandleDeleteProgressItemAsync(id);
+
+        IActionResult response = null!;
+        result.Match(
+            success => response = NoContent(),
+            failure => response = NotFound(new { message = failure })
+        );
+        return response;
     }
 }
 
