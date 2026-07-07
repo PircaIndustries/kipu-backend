@@ -7,4 +7,5 @@ public interface IProgressCommandService
 {
     Task<Result<ProgressItem, string>> HandleCreateProgressItemAsync(int projectId, string taskName, decimal plannedPercentage);
     Task<Result<ProgressItem, string>> HandleUpdateProgressAsync(int id, decimal actualPercentage);
+    Task<Result<bool, string>> HandleDeleteProgressItemAsync(int id);
 }

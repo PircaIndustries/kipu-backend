@@ -88,4 +88,23 @@ public class BudgetCommandService(
             return new Result<BudgetItem, string>.Failure($"An error occurred while processing the budget extension: {ex.Message}");
         }
     }
+
+    public async Task<Result<bool, string>> HandleDeleteBudgetItemAsync(int budgetItemId)
+    {
+        try
+        {
+            var budgetItem = await budgetItemRepository.FindByIdAsync(budgetItemId);
+            if (budgetItem == null)
+                return new Result<bool, string>.Failure($"Budget line item with ID {budgetItemId} was not found.");
+
+            budgetItemRepository.Remove(budgetItem);
+            await unitOfWork.CompleteAsync();
+
+            return new Result<bool, string>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            return new Result<bool, string>.Failure($"An error occurred while deleting the budget item: {ex.Message}");
+        }
+    }
 }

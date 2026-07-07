@@ -31,6 +31,9 @@ public static class ActionResultFromUpdatePartialMaterialRequestAssembler
                     UpdatePartialMaterialRequestError.RequestAlreadyRefused =>
                         controller.Conflict(localizer["MaterialRequestAlreadyRefused"].Value),
 
+                    UpdatePartialMaterialRequestError.BudgetExceeded =>
+                        controller.BadRequest(localizer["BudgetExceeded"].Value),
+
                     UpdatePartialMaterialRequestError.UnexpectedError =>
                         controller.Problem(
                             title: localizer["UnexpectedServerError"].Value,

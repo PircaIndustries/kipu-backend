@@ -1,3 +1,4 @@
+using Kipu.API.Budget.Domain.Repositories;
 using Kipu.API.Logistics.Application.Errors;
 using Kipu.API.Logistics.Application.Services;
 using Kipu.API.Logistics.Domain.Model.Aggregates;
@@ -14,6 +15,7 @@ namespace Kipu.API.Logistics.Application.Internal.CommandServices;
 public class MaterialRequestCommandService(
     IMaterialRequestRepository materialRequestRepository,
     IMaterialInventoryRepository materialInventoryRepository,
+    IBudgetItemRepository budgetItemRepository,
     IUnitOfWork unitOfWork,
     ILogger<MaterialRequestCommandService> logger)
     : IMaterialRequestCommandService
@@ -114,6 +116,27 @@ public class MaterialRequestCommandService(
                     UpdatePartialMaterialRequestError.MaterialRequestNotFound);
             }
 
+            if (command.RequestStatus == RequestStatus.Accepted && request.BudgetLineId is not null)
+            {
+                var budgetItem = await budgetItemRepository.FindByIdAsync(request.BudgetLineId.Value, cancellationToken);
+                if (budgetItem is null)
+                {
+                    return new Result<MaterialRequest, UpdatePartialMaterialRequestError>.Failure(
+                        UpdatePartialMaterialRequestError.BudgetExceeded);
+                }
+
+                var totalAmount = request.Items.Sum(i => i.Quantity * i.UnitPrice);
+                var availableBudget = budgetItem.AssignedBudget - budgetItem.ExecutedAmount;
+
+                if (totalAmount > availableBudget)
+                {
+                    logger.LogWarning("Budget validation failed for request {Id}: total {Total} exceeds available {Available}",
+                        command.Id, totalAmount, availableBudget);
+                    return new Result<MaterialRequest, UpdatePartialMaterialRequestError>.Failure(
+                        UpdatePartialMaterialRequestError.BudgetExceeded);
+                }
+            }
+
             try
             {
                 request.UpdatePartial(command);
@@ -131,33 +154,58 @@ public class MaterialRequestCommandService(
                     UpdatePartialMaterialRequestError.RequestAlreadyRefused);
             }
 
-            if (request.RequestStatus == RequestStatus.Accepted && request.ProjectId != null)
+            if (request.RequestStatus == RequestStatus.Accepted)
             {
-                foreach (var item in request.Items)
+                if (request.BudgetLineId is not null)
                 {
-                    var existingInventory = await materialInventoryRepository
-                        .FindByMaterialCatalogIdAndProjectIdAsync(item.MaterialCatalogId.Value, request.ProjectId.Value, cancellationToken);
-
-                    if (existingInventory != null)
+                    var budgetItem = await budgetItemRepository.FindByIdAsync(request.BudgetLineId.Value, cancellationToken);
+                    if (budgetItem is not null)
                     {
-                        var newStock = new Quantity(existingInventory.CurrentStock.Value + (int)item.Quantity);
-                        existingInventory.Update(new UpdateMaterialInventoryCommand(
-                            existingInventory.Id,
-                            existingInventory.ProjectId,
-                            existingInventory.MaterialCatalogId,
-                            newStock,
-                            existingInventory.MinimumStock,
-                            existingInventory.Location));
+                        var totalAmount = request.Items.Sum(i => i.Quantity * i.UnitPrice);
+                        logger.LogInformation("Approving request {Id}: registering expense S/ {Amount} on budget line {BudgetId}",
+                            request.Id, totalAmount, budgetItem.Id);
+                        budgetItem.RegisterExpense(totalAmount, $"MR#{request.Id} approved");
+                        budgetItemRepository.Update(budgetItem);
                     }
                     else
                     {
-                        var newInventory = new MaterialInventory(new CreateMaterialInventoryCommand(
-                            request.ProjectId,
-                            item.MaterialCatalogId,
-                            new Quantity((int)item.Quantity),
-                            new Quantity(0),
-                            new WarehouseLocation(request.DeliveryLocation)));
-                        await materialInventoryRepository.AddAsync(newInventory, cancellationToken);
+                        logger.LogWarning("Budget line {BudgetId} not found for request {Id} during approval.",
+                            request.BudgetLineId.Value, request.Id);
+                    }
+                }
+                else
+                {
+                    logger.LogInformation("Request {Id} approved without budget line.", request.Id);
+                }
+
+                if (request.ProjectId != null)
+                {
+                    foreach (var item in request.Items)
+                    {
+                        var existingInventory = await materialInventoryRepository
+                            .FindByMaterialCatalogIdAndProjectIdAsync(item.MaterialCatalogId.Value, request.ProjectId.Value, cancellationToken);
+
+                        if (existingInventory != null)
+                        {
+                            var newStock = new Quantity(existingInventory.CurrentStock.Value + (int)item.Quantity);
+                            existingInventory.Update(new UpdateMaterialInventoryCommand(
+                                existingInventory.Id,
+                                existingInventory.ProjectId,
+                                existingInventory.MaterialCatalogId,
+                                newStock,
+                                existingInventory.MinimumStock,
+                                existingInventory.Location));
+                        }
+                        else
+                        {
+                            var newInventory = new MaterialInventory(new CreateMaterialInventoryCommand(
+                                request.ProjectId,
+                                item.MaterialCatalogId,
+                                new Quantity((int)item.Quantity),
+                                new Quantity(0),
+                                new WarehouseLocation(request.DeliveryLocation)));
+                            await materialInventoryRepository.AddAsync(newInventory, cancellationToken);
+                        }
                     }
                 }
             }
