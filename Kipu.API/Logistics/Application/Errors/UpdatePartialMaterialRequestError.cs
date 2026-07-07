@@ -5,5 +5,6 @@ public enum UpdatePartialMaterialRequestError
     MaterialRequestNotFound,
     RequestAlreadyAccepted,
     RequestAlreadyRefused,
+    BudgetExceeded,
     UnexpectedError
 }

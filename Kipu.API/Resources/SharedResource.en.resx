@@ -45,6 +45,9 @@
     <data name="MaterialRequestAlreadyRefused" xml:space="preserve">
         <value>Cannot update a material request that has been refused.</value>
     </data>
+    <data name="BudgetExceeded" xml:space="preserve">
+        <value>The total amount of the request exceeds the available budget of the assigned budget line.</value>
+    </data>
     <data name="InvalidMaterialRequestRequest" xml:space="preserve">
         <value>The provided material request data is invalid. Please check your inputs.</value>
     </data>

@@ -34,4 +34,6 @@ public interface IBudgetCommandService
     /// <param name="additionalAmount">The extra funds to annex.</param>
     /// <returns>A result containing the updated BudgetItem aggregate or an error message.</returns>
     Task<Result<BudgetItem, string>> HandleRequestExtensionAsync(int budgetItemId, decimal additionalAmount);
+
+    Task<Result<bool, string>> HandleDeleteBudgetItemAsync(int budgetItemId);
 }
